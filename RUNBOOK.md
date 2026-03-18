@@ -74,83 +74,78 @@ For v1: skip the Tor proxy sidecar. The app degrades gracefully — Tor features
 
 - [x] Clone upstream repo
 - [x] Initialize `am-i-exposed-startos` git repo
-- [ ] Copy structure from `hello-world-startos` template
-- [ ] Initialize `package.json`, `tsconfig.json`, `Makefile`
-- [ ] Add `startos/sdk.ts`
-- [ ] Add placeholder `icon.png` and `assets/`
+- [x] Copy structure from `hello-world-startos` template
+- [x] Initialize `package.json`, `tsconfig.json`, `Makefile`
+- [x] Add `startos/sdk.ts`
+- [x] Add `icon.png` (from upstream `public/icon-512.png`) and `assets/`
 
 ### Phase 2 — Manifest
 
-- [ ] `startos/manifest/index.ts`
-  - [ ] `id: 'am-i-exposed'`
-  - [ ] `title: 'Am I Exposed?'`
-  - [ ] `license: 'MIT'`
-  - [ ] `packageRepo`, `upstreamRepo`, `marketingUrl`, `donationUrl`, `docsUrls`
-  - [ ] `volumes: ['main']`
-  - [ ] `images.am-i-exposed` → `ghcr.io/copexit/am-i-exposed-umbrel:v0.10.0`
-  - [ ] `arch: ['x86_64', 'aarch64']`
-  - [ ] `dependencies.mempool` (optional, with metadata/s9pk)
-  - [ ] Description (short + long)
-  - [ ] Alerts (install alert about mempool dependency)
+- [x] `startos/manifest/index.ts`
+  - [x] `id: 'am-i-exposed'`
+  - [x] `title: 'Am I Exposed?'`
+  - [x] `license: 'MIT'`
+  - [x] `packageRepo`, `upstreamRepo`, `marketingUrl`, `donationUrl`, `docsUrls`
+  - [x] `volumes: ['main']`
+  - [x] `images.am-i-exposed` → `ghcr.io/copexit/am-i-exposed-umbrel:v0.10.0`
+  - [x] `arch: ['x86_64', 'aarch64']`
+  - [x] `dependencies: {}` (deferred — no mempool dep for v1)
+  - [x] Description (short + long)
+  - [x] Alerts (all null for v1)
 
 ### Phase 3 — Main
 
-- [ ] `startos/main.ts`
-  - [ ] Single daemon `primary` with `am-i-exposed` image
-  - [ ] Mount `main` volume at `/data` (or wherever nginx needs state — likely unused, but volumes required)
-  - [ ] Set env vars: `APP_MEMPOOL_IP=mempool.startos`, `APP_MEMPOOL_PORT=80`
-  - [ ] Set `APP_TOR_PROXY_IP` + `APP_TOR_PROXY_PORT` to empty/disabled values
-  - [ ] Health check: `sdk.healthCheck.checkPortListening` on port 8080
-  - [ ] `sdk.useEntrypoint()` (nginx starts with the existing CMD)
+- [x] `startos/main.ts`
+  - [x] Single daemon `primary` with `am-i-exposed` image
+  - [x] Mount `main` volume at `/data`
+  - [x] Set env vars: `APP_MEMPOOL_IP=mempool.startos`, `APP_MEMPOOL_PORT=80`
+  - [x] Set `APP_TOR_PROXY_IP=127.0.0.1`, `APP_TOR_PROXY_PORT=3001` (placeholder, no sidecar)
+  - [x] `APP_MEMPOOL_HIDDEN_SERVICE=''`
+  - [x] Health check: `sdk.healthCheck.checkPortListening` on port 8080
+  - [x] `sdk.useEntrypoint()`
 
 ### Phase 4 — Interfaces
 
-- [ ] `startos/interfaces.ts`
-  - [ ] Single `ui` interface on port 8080
-  - [ ] No auth required
+- [x] `startos/interfaces.ts` — single `ui` on port 8080, no auth
 
 ### Phase 5 — Init
 
-- [ ] `startos/init/index.ts`
-  - [ ] Install init: likely no-op (no secrets, no db to bootstrap)
-  - [ ] Restore init: no-op
+- [x] `startos/init/index.ts` — no-op install/restore
 
 ### Phase 6 — Dependencies
 
-- [ ] `startos/dependencies.ts`
-  - [ ] Declare mempool dependency shape
-  - [ ] No cross-service tasks needed initially (mempool doesn't need to be configured by us)
+- [x] `startos/dependencies.ts` — empty (deferred to later phase)
 
 ### Phase 7 — Versions
 
-- [ ] `startos/install/versions/v0_10_0.ts`
-- [ ] `startos/install/index.ts`
+- [x] `startos/install/versions/v0_10_0.ts` — `0.10.0:0`
+- [x] `startos/install/versionGraph.ts`
 
 ### Phase 8 — i18n
 
-- [ ] `startos/i18n/en.ts` (short + long descriptions)
-- [ ] `startos/i18n/index.ts`
+- [x] `startos/i18n/dictionaries/default.ts`
+- [x] `startos/i18n/dictionaries/translations.ts` (English only for now)
+- [x] `startos/i18n/index.ts`
 
 ### Phase 9 — Remaining files
 
-- [ ] `startos/index.ts` (barrel)
-- [ ] `startos/utils.ts`
-- [ ] `startos/backups.ts`
-- [ ] `startos/actions/index.ts`
-- [ ] `startos/fileModels/` (likely empty or minimal)
+- [x] `startos/index.ts` (barrel)
+- [x] `startos/utils.ts`
+- [x] `startos/backups.ts`
+- [x] `startos/actions/index.ts`
 
 ### Phase 10 — Assets and docs
 
-- [ ] `icon.png` (or `icon.jpg`) — download from upstream or create placeholder
-- [ ] `assets/` directory with at least one tracked file
-- [ ] `LICENSE` (copy MIT from upstream)
+- [x] `icon.png`
+- [x] `assets/.gitkeep`
+- [x] `LICENSE`
 - [ ] `README.md`
 
 ### Phase 11 — Build validation
 
-- [ ] `npm run check` passes
-- [ ] `npm run build` passes
-- [ ] `make` passes (produces `.s9pk` or build artifact)
+- [x] `npm run check` passes
+- [x] `npm run build` passes
+- [x] `make x86` passes (18MB s9pk) — **note: required start-cli upgrade to alpha.21**
 
 ### Phase 12 — Runtime testing (requires StartOS)
 
