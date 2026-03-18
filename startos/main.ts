@@ -20,11 +20,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
     exec: {
       command: sdk.useEntrypoint(),
       env: {
-        // Point nginx reverse proxy at mempool.startos (internal StartOS DNS)
-        // Falls back gracefully to public mempool.space if not installed
-        APP_MEMPOOL_IP: 'mempool.startos',
+        // Satisfy envsubst in the nginx template — point at public mempool.space
+        // until local mempool integration is wired up
+        APP_MEMPOOL_IP: 'mempool.space',
         APP_MEMPOOL_PORT: '80',
-        // Tor proxy sidecar not included in v1 — set empty to satisfy envsubst
         APP_TOR_PROXY_IP: '127.0.0.1',
         APP_TOR_PROXY_PORT: '3001',
         APP_MEMPOOL_HIDDEN_SERVICE: '',
