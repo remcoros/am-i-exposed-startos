@@ -15,7 +15,13 @@ export const manifest = setupManifest({
   images: {
     'am-i-exposed': {
       source: {
-        dockerTag: 'ghcr.io/copexit/am-i-exposed-umbrel:v0.10.0',
+        dockerTag: 'ghcr.io/copexit/am-i-exposed-umbrel:v0.34.3',
+      },
+      arch: ['x86_64', 'aarch64'],
+    },
+    'am-i-exposed-tor-proxy': {
+      source: {
+        dockerTag: 'ghcr.io/copexit/am-i-exposed-tor-proxy:v0.34.3',
       },
       arch: ['x86_64', 'aarch64'],
     },
@@ -28,5 +34,24 @@ export const manifest = setupManifest({
     start: null,
     stop: null,
   },
-  dependencies: {},
+  dependencies: {
+    mempool: {
+      description:
+        'Provides local Bitcoin blockchain data for privacy-preserving lookups. Required only when "Local" mempool source is selected.',
+      optional: true,
+      metadata: {
+        title: 'Mempool',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/mempool-startos/master/icon.png',
+      },
+    },
+    tor: {
+      description:
+        'Required for Chainalysis address lookups via Tor for enhanced privacy.',
+      optional: true,
+      metadata: {
+        title: 'Tor',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/tor-startos/master/icon.svg',
+      },
+    },
+  },
 })
