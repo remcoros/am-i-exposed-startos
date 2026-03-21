@@ -1,3 +1,6 @@
 node_modules/
 javascript/
 *.s9pk
+docker-images/
+scripts/embassy.js
+deno.lock

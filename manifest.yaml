@@ -1,0 +1,105 @@
+id: am-i-exposed
+title: Am I Exposed?
+version: 0.35.1.0
+release-notes: |
+  * Update to Am I Exposed? v0.35.1
+  * Bitcoin privacy scanner with Tor routing via the built-in StartOS Tor proxy
+  * Blockchain data fetched from local Mempool instance when installed
+license: MIT
+wrapper-repo: "https://github.com/Copexit/am-i-exposed-startos"
+upstream-repo: "https://github.com/Copexit/am-i-exposed"
+support-site: "https://github.com/Copexit/am-i-exposed/issues"
+marketing-site: "https://am-i.exposed"
+donation-url: "https://coinos.io/pay/exposed"
+build: ["make"]
+description:
+  short: "Bitcoin privacy scanner — check if your addresses or transactions are exposed"
+  long: "Am I Exposed? is an open-source Bitcoin privacy scanner. It checks whether your Bitcoin addresses, transactions, or UTXOs have been linked to regulated exchanges, KYC providers, or blockchain surveillance services.\n\nAll Chainalysis lookups are routed through the StartOS built-in Tor proxy for maximum privacy. Blockchain data is fetched from your local Mempool instance if installed."
+assets:
+  license: LICENSE
+  icon: icon.png
+  instructions: instructions.md
+main:
+  type: docker
+  image: main
+  entrypoint: docker_entrypoint.sh
+  args: []
+  mounts:
+    main: /data
+  io-format: yaml
+health-checks:
+  web-ui:
+    name: Web Interface
+    success-message: The web interface is ready to visit in a browser
+    type: script
+config:
+  get:
+    type: script
+  set:
+    type: script
+properties:
+  type: script
+volumes:
+  main:
+    type: data
+interfaces:
+  main:
+    name: Web Interface
+    description: Bitcoin privacy scanner web interface
+    tor-config:
+      port-mapping:
+        80: "8080"
+    lan-config:
+      443:
+        ssl: true
+        internal: 8080
+    ui: true
+    protocols:
+      - tcp
+      - http
+backup:
+  create:
+    type: docker
+    image: compat
+    system: true
+    entrypoint: compat
+    args:
+      - duplicity
+      - create
+      - /mnt/backup
+      - /data
+    mounts:
+      BACKUP: /mnt/backup
+      main: /data
+    io-format: yaml
+  restore:
+    type: docker
+    image: compat
+    system: true
+    entrypoint: compat
+    args:
+      - duplicity
+      - restore
+      - /mnt/backup
+      - /data
+    mounts:
+      BACKUP: /mnt/backup
+      main: /data
+    io-format: yaml
+migrations:
+  from:
+    "*":
+      type: script
+      args: ["from"]
+  to:
+    "*":
+      type: script
+      args: ["to"]
+dependencies:
+  mempool:
+    version: ">=3.0.0 <4.0.0"
+    requirement:
+      type: opt-out
+      how: Select "Public (mempool.space)" in the Mempool Source config setting
+    description: Provides local Bitcoin blockchain data for privacy-preserving lookups. Disable to use the public mempool.space API instead.
+    config: ~
