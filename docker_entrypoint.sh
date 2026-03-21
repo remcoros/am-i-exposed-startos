@@ -21,7 +21,7 @@ fi
 # Resolve mempool endpoint
 if [ "$MEMPOOL_SOURCE" = "local" ]; then
   APP_MEMPOOL_IP="mempool.embassy"
-  APP_MEMPOOL_PORT="80"
+  APP_MEMPOOL_PORT="8080"
 else
   APP_MEMPOOL_IP="mempool.space"
   APP_MEMPOOL_PORT="80"
