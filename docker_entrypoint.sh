@@ -35,28 +35,6 @@ APP_MEMPOOL_HIDDEN_SERVICE=""
 export APP_MEMPOOL_IP APP_MEMPOOL_PORT APP_TOR_PROXY_IP APP_TOR_PROXY_PORT APP_MEMPOOL_HIDDEN_SERVICE
 
 # ---------------------------------------------------------------------------
-# Write stats.yaml for Properties panel
-# ---------------------------------------------------------------------------
-cat > "$START9_DIR/stats.yaml" << EOF
-version: 2
-data:
-  "Mempool Source":
-    type: string
-    value: "$MEMPOOL_SOURCE"
-    description: "Where blockchain data is fetched from"
-    copyable: false
-    qr: false
-    masked: false
-  "Tor Proxy":
-    type: string
-    value: "embassy:9050 (SOCKS5)"
-    description: "StartOS built-in Tor SOCKS proxy used for Chainalysis lookups"
-    copyable: false
-    qr: false
-    masked: false
-EOF
-
-# ---------------------------------------------------------------------------
 # Apply nginx config template (envsubst)
 # ---------------------------------------------------------------------------
 TEMPLATE=/etc/nginx/templates/default.conf.template
