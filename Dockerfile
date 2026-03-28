@@ -1,5 +1,5 @@
-FROM ghcr.io/copexit/am-i-exposed-umbrel:v0.35.1 AS main
-FROM ghcr.io/copexit/am-i-exposed-tor-proxy:v0.35.1 AS tor-proxy
+FROM ghcr.io/copexit/am-i-exposed-umbrel:v0.35.6 AS main
+FROM ghcr.io/copexit/am-i-exposed-tor-proxy:v0.35.6 AS tor-proxy
 
 FROM alpine:3.19
 

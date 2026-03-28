@@ -1,10 +1,8 @@
 id: am-i-exposed
 title: Am I Exposed?
-version: 0.35.1.1
+version: 0.35.6
 release-notes: |
-  * Update to Am I Exposed? v0.35.1
-  * Bitcoin privacy scanner with Tor routing via the built-in StartOS Tor proxy
-  * Blockchain data fetched from local Mempool instance when installed
+  * Update to Am I Exposed? v0.35.6
 license: MIT
 wrapper-repo: "https://github.com/Copexit/am-i-exposed-startos"
 upstream-repo: "https://github.com/Copexit/am-i-exposed"
