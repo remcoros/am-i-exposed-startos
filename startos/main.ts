@@ -69,7 +69,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
     .const()
 
   // Tor's SOCKS proxy over the bridge, handed to the tor-proxy sidecar as
-  // TOR_SOCKS. With the 9050 fallback the mapped value stays constant across
+  // TOR_SOCKS. With the 9050 fallback the resolved address stays constant across
   // tor install/update/uninstall, so this `.const()` never restarts on tor
   // churn; a dead bridge address is just connection-refused, so routing
   // Chainalysis lookups through it is always safe.

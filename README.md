@@ -65,7 +65,7 @@ No special setup is required. The service starts immediately with no wizards, cr
 
 | Property           | Value                                     |
 | ------------------ | ----------------------------------------- |
-| Version constraint | `>= 3.2.1`                                |
+| Version constraint | Declared in `startos/dependencies.ts`     |
 | Required state     | Running                                   |
 | Health checks      | `webui`                                   |
 | Mounted volumes    | None                                      |
@@ -79,7 +79,7 @@ The upstream UI's "View on local mempool" link is the one exception — it's a u
 
 | Property           | Value                                                |
 | ------------------ | ---------------------------------------------------- |
-| Version constraint | `>= 0.4.9.5`                                         |
+| Version constraint | Declared in `startos/dependencies.ts`                |
 | Required state     | Running                                              |
 | Health checks      | `tor`                                                |
 | Mounted volumes    | None                                                 |
