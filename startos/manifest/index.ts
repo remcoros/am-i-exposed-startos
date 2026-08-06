@@ -13,7 +13,7 @@ export const manifest = setupManifest({
   id: 'am-i-exposed-modded',
   title: 'Am I Exposed?',
   license: 'MIT',
-  packageRepo: 'https://github.com/REPLACE_ME/am-i-exposed-modded-startos',
+  packageRepo: 'https://github.com/remcoros/am-i-exposed-startos',
   upstreamRepo: 'https://github.com/Copexit/am-i-exposed',
   marketingUrl: 'https://am-i.exposed',
   donationUrl: null,
@@ -28,7 +28,8 @@ export const manifest = setupManifest({
     },
     proxy: {
       source: {
-        dockerTag: 'mempool-api-proxy:poc',
+        dockerTag:
+          'ghcr.io/remcoros/mempool-api-proxy@sha256:656dd0276092629e2579c7df3c0946b1c068c35b1da400369a7a6b89fe31bb69',
       },
       arch: ['x86_64'],
     },

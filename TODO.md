@@ -1,8 +1,5 @@
 # TODO
 
-- [ ] Replace the local x86_64-only `mempool-api-proxy:poc` tag with an
-      immutable, reproducible, published image and add aarch64 support before
-      release.
 - [ ] Choose and implement a single frontend-network integration: either extend
       the materialized-rootfs runtime patch or publish a source-level Web UI
       image fix. It must make the frontend URL/default, `localStorage` choice,

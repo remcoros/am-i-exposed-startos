@@ -22,20 +22,21 @@ or backups.
 
 The package runs three internal daemons:
 
-| Daemon      | Image source                                  | Purpose                                                        |
-| ----------- | --------------------------------------------- | -------------------------------------------------------------- |
-| `main`      | `ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8` | Nginx and the static browser application                       |
-| `proxy`     | Local development `mempool-api-proxy:poc` tag | Stateless Esplora-compatible API backed by Bitcoin and Fulcrum |
-| `tor-proxy` | Package-local `tor-proxy/Dockerfile` build    | HTTP-to-SOCKS bridge for private Chainalysis lookups           |
+| Daemon      | Image source                                                                                                 | Purpose                                                        |
+| ----------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| `main`      | `ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8`                                                                | Nginx and the static browser application                       |
+| `proxy`     | `ghcr.io/remcoros/mempool-api-proxy@sha256:656dd0276092629e2579c7df3c0946b1c068c35b1da400369a7a6b89fe31bb69` | Stateless Esplora-compatible API backed by Bitcoin and Fulcrum |
+| `tor-proxy` | Package-local `tor-proxy/Dockerfile` build                                                                   | HTTP-to-SOCKS bridge for private Chainalysis lookups           |
 
 The Web UI and embedded proxy are referenced with `dockerTag`; neither requires
 a custom Dockerfile or replacement image. The package does, however, always
 materialize the Web UI rootfs and inject `hide-proxy-explorer-links.js` into its
 `index.html`. This runtime script injection hides invalid explorer links. The
 existing Tor proxy remains the package's sole custom Dockerfile build. The
-local proxy development tag currently makes the package x86_64-only. It must be
-replaced with a reproducible, immutable, multi-architecture image before
-release.
+proxy image is published from
+[`remcoros/mempool-api-proxy`](https://github.com/remcoros/mempool-api-proxy)
+and pinned to an immutable OCI index digest. That index currently publishes
+only a `linux/amd64` runtime manifest, so the package remains x86_64-only.
 
 The Web UI's nginx sends every `/api/*` request to the embedded proxy over the
 package's private container network. The proxy port is not exported as its own
@@ -160,7 +161,8 @@ not assume an in-place package upgrade.
 - The embedded API has no HTTP request-rate cap and `/api/*` exposes it through
   every enabled Web UI address. Keep the UI on trusted StartOS addresses or
   apply traffic controls outside the service when broadly exposing it.
-- The current local proxy image tag is x86_64-only and is not a release source.
+- The published proxy image currently provides only a `linux/amd64` runtime
+  manifest, so this package supports x86_64 only.
 - Live validation and release blockers are tracked in `TODO.md`.
 
 ## What Is Unchanged from Upstream
@@ -177,7 +179,7 @@ not assume an in-place package upgrade.
 
 ```yaml
 package_id: am-i-exposed-modded
-architectures: [x86_64] # local proxy POC image limitation
+architectures: [x86_64] # published proxy image provides linux/amd64 only
 daemons:
   - main
   - proxy

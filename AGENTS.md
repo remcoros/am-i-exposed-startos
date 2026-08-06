@@ -22,11 +22,13 @@ bundle, or package checks; state which behavior was exercised on StartOS.
 - The runtime contains the `main` Web UI daemon, the internal `proxy` Mempool
   API Proxy daemon, and the internal `tor-proxy` HTTP-to-SOCKS daemon. `main` uses
   `ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8`, the embedded proxy uses the
-  local `mempool-api-proxy:poc` development tag, and the existing Tor proxy is
-  built from `tor-proxy/Dockerfile`. Do not introduce another custom image
-  build. The Web UI rootfs is intentionally materialized and patched on every
-  start to inject `hide-proxy-explorer-links.js` into `index.html`; this is a
-  runtime rootfs patch without a custom Web UI image or Dockerfile.
+  immutable
+  `ghcr.io/remcoros/mempool-api-proxy@sha256:656dd0276092629e2579c7df3c0946b1c068c35b1da400369a7a6b89fe31bb69`
+  published image, and the existing Tor proxy is built from
+  `tor-proxy/Dockerfile`. Do not introduce another custom image build. The Web
+  UI rootfs is intentionally materialized and patched on every start to inject
+  `hide-proxy-explorer-links.js` into `index.html`; this is a runtime rootfs
+  patch without a custom Web UI image or Dockerfile.
 - The embedded proxy is always used. Do not add a Mempool/provider switch or a
   dependency on `mempool` or the separately packaged `mempool-api-proxy`.
 - The Configure action selects only `mainnet` or `testnet4`, with `testnet4` as
@@ -55,9 +57,9 @@ bundle, or package checks; state which behavior was exercised on StartOS.
 - Explorer links are always hidden because the internal API has no explorer UI.
   Preserve the always-applied materialized-rootfs script injection. Do not
   restore Mempool URL discovery or make the injection provider-conditional.
-- The current local `mempool-api-proxy:poc` image is x86_64-only and suitable
-  only for development. Replacing it with a reproducible published image is a
-  release blocker.
+- The published proxy OCI index currently includes a `linux/amd64` runtime
+  manifest only, so keep the package x86_64-only until another published
+  architecture is verified.
 
 ## Repository boundaries
 

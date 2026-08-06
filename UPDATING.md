@@ -3,7 +3,8 @@
 This package uses two manifest `dockerTag` images and one package-local build:
 
 - `ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8` for `main`;
-- the local development `mempool-api-proxy:poc` tag for `proxy`; and
+- `ghcr.io/remcoros/mempool-api-proxy@sha256:656dd0276092629e2579c7df3c0946b1c068c35b1da400369a7a6b89fe31bb69`
+  for `proxy`; and
 - `tor-proxy/Dockerfile` for the existing internal HTTP-to-SOCKS proxy.
 
 The Web UI and embedded Mempool API Proxy integration do not require custom
@@ -34,10 +35,12 @@ image fix, then test clean and pre-existing browser state on both networks.
 
 ## Embedded Mempool API Proxy
 
-The current `mempool-api-proxy:poc` tag is a local, mutable, x86_64-only
-development artifact. It is not a publication source. Before release, publish
-an immutable image built reproducibly from the verified proxy revision, record
-its source and digest, and support every architecture declared in the manifest.
+The proxy image is published from
+[`remcoros/mempool-api-proxy`](https://github.com/remcoros/mempool-api-proxy)
+and pinned by immutable OCI index digest. The pinned index currently contains a
+`linux/amd64` runtime manifest (plus its build attestation), so the package must
+remain x86_64-only until a published digest is verified to include another
+runtime architecture.
 
 The embedded proxy must continue to:
 
@@ -66,8 +69,8 @@ and verified explicitly rather than inferred from version metadata.
 ## Applying an update
 
 1. Verify upstream tags, image provenance, immutable digests, and architecture
-   availability for every changed tagged image. Review the Tor proxy's pinned
-   base image when that build changes.
+   availability for every changed image. Review the Tor proxy's pinned base
+   image when that build changes.
 2. Update the appropriate `dockerTag` or `tor-proxy/Dockerfile` input.
 3. Install the pinned package dependencies with `npm ci --allow-git=all`.
    npm 12 otherwise rejects the nested Git dependencies used by the StartOS
