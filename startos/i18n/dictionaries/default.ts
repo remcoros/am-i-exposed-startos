@@ -13,6 +13,12 @@ const dict = {
   // interfaces.ts
   'Web UI': 6,
   'The web interface of Am I Exposed?': 7,
+
+  // actions/configure.ts
+  Configure: 8,
+  'Select the local blockchain data provider.': 9,
+  'Blockchain Data Provider': 10,
+  'Choose which local service supplies Bitcoin blockchain data.': 11,
 } as const
 
 /**

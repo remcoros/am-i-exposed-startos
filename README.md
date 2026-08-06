@@ -41,17 +41,20 @@
 
 Architectures: x86_64, aarch64
 
-The main image is the upstream Umbrel build — a static Next.js export served by nginx, with a reverse proxy to route `/api/*` requests to the local Mempool instance. The tor-proxy sidecar forwards Chainalysis address checks through Tor's SOCKS5 proxy for private surveillance database lookups.
+The main image is the upstream Umbrel build — a static Next.js export served by nginx, with a reverse proxy that routes `/api/*` requests to the selected local blockchain data provider. The tor-proxy sidecar forwards Chainalysis address checks through Tor's SOCKS5 proxy for private surveillance database lookups.
 
 ## Volumes
 
-| Volume | Mount Point | Purpose         |
-| ------ | ----------- | --------------- |
-| `main` | `/data`     | Persistent data |
+| Volume    | Mount Point | Purpose                                   |
+| --------- | ----------- | ----------------------------------------- |
+| `main`    | `/data`     | Upstream application data                 |
+| `startos` | Not mounted | Selected blockchain data provider setting |
 
 ## Installation and First-Run Flow
 
-No special setup is required. The service starts immediately with no wizards, credentials, or initial configuration. Both the Mempool and Tor dependencies must be installed and running.
+The existing **Mempool** package is selected by default, preserving the behavior of earlier releases. Install and run Mempool plus Tor, then start Am I Exposed?.
+
+To use **Mempool API Proxy** instead, stop Am I Exposed?, open **Actions → Configure**, select **mempool.space (proxy)**, and start the service again. Only the selected blockchain data provider and Tor are required at runtime.
 
 ## Network Interfaces
 
@@ -61,7 +64,9 @@ No special setup is required. The service starts immediately with no wizards, cr
 
 ## Dependencies
 
-### Mempool (required)
+### Blockchain data provider (choose one)
+
+#### Mempool
 
 | Property           | Value                                     |
 | ------------------ | ----------------------------------------- |
@@ -71,9 +76,19 @@ No special setup is required. The service starts immediately with no wizards, cr
 | Mounted volumes    | None                                      |
 | Purpose            | Blockchain API data through your own node |
 
-All `/api/*` requests from the browser are reverse-proxied by nginx to the local Mempool instance over the internal LXC bridge (resolved at runtime and passed as `APP_MEMPOOL_IP`/`APP_MEMPOOL_PORT`), so no blockchain queries leave your server.
+#### Mempool API Proxy
 
-The upstream UI's "View on local mempool" link is the one exception — it's a user-facing URL, not an internal call. `startos/main.ts` resolves Mempool's `webui` service interface and passes the result as `APP_MEMPOOL_EXTERNAL_URL`, preferring a public domain, then a public IP:port, then the `.local` mDNS address (empty string if none, which is a no-op upstream). Without it, the upstream image builds the link as `<this-app-host>:8080`, which is wrong on StartOS where each service has its own hostname.
+| Property           | Value                                    |
+| ------------------ | ---------------------------------------- |
+| Version constraint | Declared in `startos/dependencies.ts`    |
+| Required state     | Running                                  |
+| Health checks      | `api`                                    |
+| Mounted volumes    | None                                     |
+| Purpose            | Lightweight mempool.space-compatible API |
+
+All `/api/*` requests from the browser are reverse-proxied by nginx to the selected provider over the internal LXC bridge. The bridge address is resolved from each provider's exported host and port constants at runtime and passed to the upstream image as `APP_MEMPOOL_IP`/`APP_MEMPOOL_PORT`.
+
+When Mempool is selected, `startos/main.ts` also resolves its browser-facing `webui` address for the upstream **View on local mempool** link. Mempool API Proxy is API-only and has no explorer page. For that selection only, the wrapper copies a small packaged script into the materialized upstream image and injects its tag into `index.html`; the script hides only invalid same-host `/tx/…` and `/address/…` result links. The unmodified image is used when Mempool is selected.
 
 ### Tor (required)
 
@@ -89,20 +104,23 @@ Chainalysis address checks are routed through Tor via the tor-proxy sidecar for 
 
 ## Configuration Management
 
-| StartOS-Managed                    | Upstream-Managed |
-| ---------------------------------- | ---------------- |
-| Mempool API connection (automatic) | None             |
-| Tor proxy connection (automatic)   | None             |
+| StartOS-Managed                              | Upstream-Managed |
+| -------------------------------------------- | ---------------- |
+| Blockchain data provider selection           | None             |
+| Selected provider API connection (automatic) | None             |
+| Tor proxy connection (automatic)             | None             |
 
-No user configuration is needed. Both connections are set automatically via environment variables.
+The **Configure** action stores the provider choice in StartOS-owned `store.json`. Connection values remain automatic environment variables and are never entered by the user.
 
 ## Actions
 
-None.
+| Action      | Allowed status | Purpose                             |
+| ----------- | -------------- | ----------------------------------- |
+| `Configure` | Stopped        | Select Mempool or Mempool API Proxy |
 
 ## Backups
 
-The `main` volume is backed up.
+The `main` and `startos` volumes are backed up, including the provider choice.
 
 ## Health Checks
 
@@ -113,7 +131,10 @@ The `main` volume is backed up.
 
 ## Limitations and Differences
 
-1. **Mempool explorer links** — The `/api/local-info` endpoint returns empty values for `mempoolOnion` since Tor is handled differently on StartOS.
+1. **Explorer links with the proxy** — Mempool API Proxy has no explorer UI, so result-page explorer links are hidden while it is selected.
+2. **Proxy networks** — Mempool API Proxy supports mainnet and testnet4, but not signet. The full Mempool provider remains available for other supported upstream configurations.
+3. **Mempool onion address** — The `/api/local-info` endpoint returns an empty `mempoolOnion` since Tor is handled differently on StartOS.
+4. **Local development dependency** — Until `mempool-api-proxy-startos` is published, `package.json` uses a local `file:` dependency and the repo-local `.npmrc` permits that package's Git-based type dependencies and installs the local package inside this repository's build root. All temporary settings must be removed and replaced with a pinned remote dependency before publication.
 
 ## What Is Unchanged from Upstream
 
@@ -145,11 +166,12 @@ images:
 architectures: [x86_64, aarch64]
 volumes:
   main: /data
+  startos: provider selection
 ports:
   ui: 8080
   tor-proxy: 3001 (internal)
 dependencies:
-  - mempool
+  - one of: [mempool, mempool-api-proxy]
   - tor
 startos_managed_env_vars:
   main:
@@ -162,10 +184,12 @@ startos_managed_env_vars:
   tor-proxy:
     - PORT
     - TOR_SOCKS
-actions: []
+actions:
+  - configure
 health_checks:
   - port_listening: 3001
   - port_listening: 8080
 backup_volumes:
   - main
+  - startos
 ```

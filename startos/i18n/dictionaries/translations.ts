@@ -10,6 +10,10 @@ export default {
     5: 'El proxy Tor está listo',
     6: 'Interfaz web',
     7: 'La interfaz web de Am I Exposed?',
+    8: 'Configurar',
+    9: 'Selecciona el proveedor local de datos de blockchain.',
+    10: 'Proveedor de datos de blockchain',
+    11: 'Elige qué servicio local proporciona los datos de la blockchain de Bitcoin.',
   },
   de_DE: {
     0: 'Starte Am I Exposed?',
@@ -20,6 +24,10 @@ export default {
     5: 'Tor-Proxy ist bereit',
     6: 'Weboberfläche',
     7: 'Die Weboberfläche von Am I Exposed?',
+    8: 'Konfigurieren',
+    9: 'Wähle den lokalen Blockchain-Datenanbieter aus.',
+    10: 'Blockchain-Datenanbieter',
+    11: 'Wähle den lokalen Dienst aus, der Bitcoin-Blockchain-Daten bereitstellt.',
   },
   pl_PL: {
     0: 'Uruchamianie Am I Exposed?',
@@ -30,6 +38,10 @@ export default {
     5: 'Proxy Tor jest gotowy',
     6: 'Interfejs webowy',
     7: 'Interfejs webowy Am I Exposed?',
+    8: 'Konfiguruj',
+    9: 'Wybierz lokalnego dostawcę danych blockchain.',
+    10: 'Dostawca danych blockchain',
+    11: 'Wybierz lokalną usługę dostarczającą dane blockchain Bitcoin.',
   },
   fr_FR: {
     0: 'Démarrage de Am I Exposed?',
@@ -40,5 +52,9 @@ export default {
     5: 'Le proxy Tor est prêt',
     6: 'Interface web',
     7: "L'interface web de Am I Exposed?",
+    8: 'Configurer',
+    9: 'Sélectionnez le fournisseur local de données de blockchain.',
+    10: 'Fournisseur de données blockchain',
+    11: 'Choisissez le service local qui fournit les données de la blockchain Bitcoin.',
   },
 } satisfies Record<string, LangDict>
