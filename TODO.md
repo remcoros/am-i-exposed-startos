@@ -19,10 +19,10 @@
       history, work, response-size, and timeout limits remain enforced. Confirm
       the configured 16-request Bitcoin and 8-request Fulcrum limits and that
       the proxy port has no separate StartOS interface.
-- [ ] Exercise every proxy log-level selection across configuration and restart.
-      Confirm the default `warn` level retains warnings and errors while
-      suppressing routine HTTP request logs, and that more verbose selections
-      restore the expected detail.
+- [ ] Exercise every service log-level selection across configuration and
+      restart. Confirm the default `warn` level retains warnings and errors
+      while suppressing both embedded-proxy and Web UI nginx request logs, and
+      that more verbose selections restore the expected detail.
 - [ ] Verify explorer links remain hidden for transaction and address results
       on both networks through the always-applied materialized-rootfs script
       injection, including after restart and package update.

@@ -17,9 +17,9 @@ const inputSpec = InputSpec.of({
     default: 'testnet4',
   }),
   logLevel: Value.select({
-    name: i18n('Proxy log level'),
+    name: i18n('Log level'),
     description: i18n(
-      'Control proxy log verbosity. Informational and more verbose levels include HTTP request logs.',
+      'Control embedded proxy and Web UI nginx log verbosity. Informational and more verbose levels include HTTP request logs.',
     ),
     values: {
       error: i18n('Errors only'),
@@ -36,7 +36,7 @@ export const configure = sdk.Action.withInput(
   'configure',
   {
     name: i18n('Configure'),
-    description: i18n('Choose the Bitcoin network and proxy log level.'),
+    description: i18n('Choose the Bitcoin network and service log level.'),
     warning: i18n(
       'Changing either setting restarts the service. Changing the network also switches both Bitcoin and Fulcrum dependencies.',
     ),

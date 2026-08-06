@@ -1,18 +1,18 @@
 import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '0.35.8:8',
+  version: '0.35.8:9',
   releaseNotes: {
     en_US:
-      'Adds configurable embedded-proxy logging and defaults to warnings and errors, suppressing routine HTTP request logs.',
+      'Applies configurable logging to both the embedded proxy and Web UI nginx, suppressing their routine request logs at the default warning level.',
     es_ES:
-      'Añade un registro configurable para el proxy integrado y utiliza de forma predeterminada advertencias y errores, suprimiendo los registros rutinarios de solicitudes HTTP.',
+      'Aplica el registro configurable tanto al proxy integrado como a nginx de la interfaz web, suprimiendo sus registros rutinarios de solicitudes con el nivel de advertencia predeterminado.',
     de_DE:
-      'Fügt eine konfigurierbare Protokollierung für den eingebetteten Proxy hinzu und verwendet standardmäßig Warnungen und Fehler, wodurch routinemäßige HTTP-Anfrageprotokolle unterdrückt werden.',
+      'Wendet die konfigurierbare Protokollierung auf den eingebetteten Proxy und Web-UI-nginx an und unterdrückt deren routinemäßige Anfrageprotokolle bei der standardmäßigen Warnstufe.',
     pl_PL:
-      'Dodaje konfigurowalne rejestrowanie wbudowanego proxy i domyślnie zapisuje ostrzeżenia oraz błędy, wyłączając rutynowe dzienniki żądań HTTP.',
+      'Stosuje konfigurowalne rejestrowanie zarówno do wbudowanego proxy, jak i nginx interfejsu webowego, wyłączając rutynowe dzienniki żądań przy domyślnym poziomie ostrzeżeń.',
     fr_FR:
-      'Ajoute une journalisation configurable pour le proxy intégré et utilise par défaut les avertissements et les erreurs, supprimant les journaux courants des requêtes HTTP.',
+      'Applique la journalisation configurable au proxy intégré et à nginx de l’interface web, supprimant leurs journaux courants de requêtes au niveau d’avertissement par défaut.',
   },
   migrations: {
     up: async ({ effects }) => {},

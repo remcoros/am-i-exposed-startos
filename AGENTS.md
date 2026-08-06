@@ -27,12 +27,12 @@ bundle, or package checks; state which behavior was exercised on StartOS.
   published image, and the existing Tor proxy is built from
   `tor-proxy/Dockerfile`. Do not introduce another custom image build. The Web
   UI rootfs is intentionally materialized and patched on every start to inject
-  `hide-proxy-explorer-links.js` into `index.html`; this is a runtime rootfs
-  patch without a custom Web UI image or Dockerfile.
+  `hide-proxy-explorer-links.js` into `index.html` and configure nginx logging;
+  this is a runtime rootfs patch without a custom Web UI image or Dockerfile.
 - The embedded proxy is always used. Do not add a Mempool/provider switch or a
   dependency on `mempool` or the separately packaged `mempool-api-proxy`.
 - The Configure action selects `mainnet` or `testnet4`, with `testnet4` as the
-  default, and the embedded proxy log level, with `warn` as the default. It
+  default, and the service log level, with `warn` as the default. It
   conditionally declares the matching direct Bitcoin and Fulcrum dependencies;
   Tor is always required. Do not claim end-to-end network integration is
   complete: the pinned frontend independently derives and persists its network
@@ -57,8 +57,11 @@ bundle, or package checks; state which behavior was exercised on StartOS.
 - Keep `CORE_RPC_MAX_CONCURRENCY=16` and `FULCRUM_MAX_CONCURRENCY=8` in the
   embedded proxy environment. This is the benchmark-supported personal-use
   profile; do not raise Fulcrum concurrency merely to match Bitcoin.
-- Pass the configured proxy log level as `LOG_LEVEL`, defaulting to `warn` so
-  warnings and errors remain visible without routine HTTP request logs.
+- Pass the configured service log level to the proxy as `LOG_LEVEL` and patch
+  the materialized Web UI nginx configuration to match. At the `warn` default,
+  disable nginx access logs, use its warning error-log level, and quiet its
+  informational entrypoint messages. Preserve access logs for `info`, `debug`,
+  and `trace`; use `nginx-debug` for the last two levels.
 - Explorer links are always hidden because the internal API has no explorer UI.
   Preserve the always-applied materialized-rootfs script injection. Do not
   restore Mempool URL discovery or make the injection provider-conditional.

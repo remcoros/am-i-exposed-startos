@@ -22,8 +22,7 @@ settings, and backups from the old package are not migrated automatically.
 ## Getting set up
 
 1. Open **Actions → Configure**, select **Mainnet** or **Testnet4**, and choose
-   the embedded proxy log level. Testnet4 and **Warnings and errors** are the
-   defaults.
+   the service log level. Testnet4 and **Warnings and errors** are the defaults.
 2. Install and start the Bitcoin and Fulcrum dependencies shown by StartOS for
    that network.
 3. Complete the Bitcoin configuration task if it appears. Bitcoin must be
@@ -64,14 +63,15 @@ The embedded proxy has no separate StartOS interface, but nginx exposes it as
 `/api/*` through every enabled Web UI address. The package disables that API's
 per-client HTTP request limit. It uses the tested personal-use concurrency
 profile of 16 active Bitcoin RPC requests and 8 active Fulcrum requests for
-large-wallet analysis. Its default **Warnings and errors** log level suppresses
+large-wallet analysis. The service log level controls both the embedded proxy
+and Web UI nginx. Its default **Warnings and errors** setting suppresses their
 routine HTTP request logs; use **Informational**, **Debug**, or **Trace** only
 when extra detail is useful. Keep the Web UI on trusted StartOS addresses, or
 add external traffic controls if you make it broadly reachable.
 
 ## Data and backups
 
-Backups retain the Web UI data, selected network, and proxy log level. The
+Backups retain the Web UI data, selected network, and service log level. The
 stateless proxy has no database or cache to back up, and Bitcoin's RPC cookie
 is neither copied nor stored in this package's backup. Backups created for the
 older `am-i-exposed` package are not backups of `am-i-exposed-modded` and are

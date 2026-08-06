@@ -30,9 +30,10 @@ The package runs three internal daemons:
 
 The Web UI and embedded proxy are referenced with `dockerTag`; neither requires
 a custom Dockerfile or replacement image. The package does, however, always
-materialize the Web UI rootfs and inject `hide-proxy-explorer-links.js` into its
-`index.html`. This runtime script injection hides invalid explorer links. The
-existing Tor proxy remains the package's sole custom Dockerfile build. The
+materialize the Web UI rootfs, inject `hide-proxy-explorer-links.js` into its
+`index.html`, and align nginx logging with the configured service log level.
+This runtime patch hides invalid explorer links and controls nginx access/error
+logs. The existing Tor proxy remains the package's sole custom Dockerfile build. The
 proxy image is published from
 [`remcoros/mempool-api-proxy`](https://github.com/remcoros/mempool-api-proxy)
 and pinned to an immutable OCI index digest. That index currently publishes
@@ -46,16 +47,17 @@ HTTP request limiter, including for requests arriving through those UI
 addresses; upstream concurrency, history, work, response-size, and timeout
 limits remain active. The package explicitly gives Bitcoin RPC up to 16 active
 requests and Fulcrum up to 8, the tested personal-use profile for large-wallet
-analysis. Its configurable log level defaults to `warn`, which retains warnings
-and errors while suppressing routine HTTP request logs. The proxy has no
-persistent data volume.
+analysis. The configurable service log level applies to both the embedded proxy
+and Web UI nginx. It defaults to `warn`, retaining warnings and errors while
+suppressing routine proxy and nginx request logs. The proxy has no persistent
+data volume.
 
 ## Volumes
 
-| Volume    | Mount                      | Purpose                     |
-| --------- | -------------------------- | --------------------------- |
-| `main`    | `/data` in the Web UI      | Upstream application data   |
-| `startos` | StartOS package state only | Network and proxy log level |
+| Volume    | Mount                      | Purpose                       |
+| --------- | -------------------------- | ----------------------------- |
+| `main`    | `/data` in the Web UI      | Upstream application data     |
+| `startos` | StartOS package state only | Network and service log level |
 
 The embedded proxy is stateless. It has no database, cache volume, or data
 directory. The selected Bitcoin package's `main` volume is mounted read-only
@@ -71,10 +73,11 @@ during a Bitcoin restart does not require stored credentials.
 
 ## Installation and Configuration
 
-The **Configure** action selects the Bitcoin network and embedded proxy log
-level. `testnet4` is the default network for current validation. The log level
-defaults to **Warnings and errors**, which hides routine HTTP request logs;
-select **Informational**, **Debug**, or **Trace** when more detail is needed.
+The **Configure** action selects the Bitcoin network and service log level.
+`testnet4` is the default network for current validation. The log level applies
+to both the embedded proxy and Web UI nginx. It defaults to **Warnings and
+errors**, which hides routine HTTP request logs; select **Informational**,
+**Debug**, or **Trace** when more detail is needed.
 The network choice switches the complete direct dependency pair:
 
 | Selection | Bitcoin dependency | Fulcrum dependency |
@@ -86,8 +89,8 @@ Tor is always a direct dependency. The package also requires the selected
 Bitcoin service to be unpruned with transaction indexing enabled. Users do not
 select an API provider and do not install Mempool or Mempool API Proxy.
 
-This setting currently controls the backend only: dependency selection and the
-proxy's Bitcoin network. The pinned frontend still derives its own network from
+The network setting currently controls the backend only: dependency selection
+and the proxy's Bitcoin network. The pinned frontend still derives its own network from
 its URL/default behavior, persists that choice in browser `localStorage`, and
 uses it for its cache namespace. Its network can therefore disagree with the
 StartOS backend after a fresh visit, URL change, or previously stored browser
@@ -126,9 +129,9 @@ or unsynced upstreams.
 
 ## Actions
 
-| Action      | Purpose                                                       |
-| ----------- | ------------------------------------------------------------- |
-| `Configure` | Select network and proxy logging; defaults to warnings/errors |
+| Action      | Purpose                                                         |
+| ----------- | --------------------------------------------------------------- |
+| `Configure` | Select network and service logging; defaults to warnings/errors |
 
 There is no provider switch. Changing networks changes both backend Bitcoin and
 Fulcrum dependencies and restarts the affected runtime context. It does not yet
@@ -138,7 +141,7 @@ cache namespace.
 ## Backups
 
 Backups include the Web UI's `main` volume and the `startos` volume containing
-the selected network and proxy log level. They contain no proxy index, cache,
+the selected network and service log level. They contain no proxy index, cache,
 RPC password, or copied Bitcoin cookie. Bitcoin and Fulcrum own and back up
 their chain/index state independently.
 
@@ -192,13 +195,14 @@ daemons:
   - tor-proxy
 volumes:
   main: upstream web application data
-  startos: selected Bitcoin network
+  startos: selected Bitcoin network and service log level
 ports:
   web_ui: 8080
 dependencies:
   mainnet: [bitcoind, fulcrum, tor]
   testnet4: [bitcoind-testnet, fulcrum-testnet, tor]
 default_network: testnet4
+default_log_level: warn # suppresses routine proxy and nginx request logs
 proxy:
   exported: false
   reachable_via: web_ui:/api/*

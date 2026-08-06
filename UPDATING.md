@@ -9,8 +9,9 @@ This package uses two manifest `dockerTag` images and one package-local build:
 
 The Web UI and embedded Mempool API Proxy integration do not require custom
 Dockerfiles or replacement images. The package does always materialize the Web
-UI rootfs and inject its explorer-link-hiding script into `index.html`; retain
-and retest that runtime patch whenever the Web UI image changes.
+UI rootfs, inject its explorer-link-hiding script into `index.html`, and patch
+nginx logging. Retain and retest those runtime patches whenever the Web UI image
+changes.
 
 ## Am I Exposed? Web UI
 
@@ -52,6 +53,13 @@ The embedded proxy must continue to:
 - expose no separate StartOS interface for its port while remaining reachable
   as `/api/*` through all enabled Web UI addresses.
 
+The same configured log level must patch the materialized Web UI nginx rootfs.
+At `error` and `warn`, disable its global access log and quiet informational
+entrypoint messages. At `info`, `debug`, and `trace`, retain the access log. Map
+`trace` to nginx's `debug` error level and use `nginx-debug` for both `debug` and
+`trace`. Guard the expected global directives so an upstream layout change
+fails visibly instead of silently leaving noisy logs enabled.
+
 ## Tor proxy
 
 The Tor proxy remains a package-local build from `tor-proxy/Dockerfile`. Review
@@ -84,7 +92,7 @@ and verified explicitly rather than inferred from version metadata.
 5. Run formatting, TypeScript, bundle, and proxy application tests.
 6. Pack and install the exact artifact. Exercise both backend network
    selections, frontend URL/`localStorage`/cache agreement, cookie rotation,
-   embedded-proxy readiness, every proxy log-level selection and suppression of
-   routine request logs at `warn`, `/api/*` exposure and limits, injected
+   embedded-proxy readiness, every service log-level selection and suppression
+   of proxy and nginx request logs at `warn`, `/api/*` exposure and limits, injected
    hidden explorer links, Tor lookups, side-by-side package identity,
    restart/update, and backup/restore before publication.

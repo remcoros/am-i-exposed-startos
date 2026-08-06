@@ -36,6 +36,50 @@ const proxyPatchPublicPath = '/startos-proxy-ui.js'
 const proxyPatchTarget = `/usr/share/nginx/html${proxyPatchPublicPath}`
 const proxyPatchMarker = 'data-startos-proxy-ui-patch'
 
+type LogLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace'
+
+const replaceSingleNginxDirective = (
+  source: string,
+  pattern: RegExp,
+  replacement: string,
+  directive: string,
+): string => {
+  const matches = source.match(pattern) ?? []
+  if (matches.length !== 1) {
+    throw new Error(
+      `Cannot patch Am I Exposed nginx: expected one ${directive} directive, found ${String(matches.length)}`,
+    )
+  }
+  return source.replace(pattern, replacement)
+}
+
+const patchNginxLogging = async (
+  rootfs: string,
+  logLevel: LogLevel,
+): Promise<void> => {
+  const nginxConfigPath = `${rootfs}/etc/nginx/nginx.conf`
+  const nginxConfig = await readFile(nginxConfigPath, 'utf8')
+  const nginxErrorLevel = logLevel === 'trace' ? 'debug' : logLevel
+  const accessLogEnabled = ['info', 'debug', 'trace'].includes(logLevel)
+
+  const withErrorLevel = replaceSingleNginxDirective(
+    nginxConfig,
+    /^[ \t]*error_log[ \t]+\/var\/log\/nginx\/error\.log[ \t]+(?:emerg|alert|crit|error|warn|notice|info|debug);[ \t]*$/gm,
+    `error_log  /var/log/nginx/error.log ${nginxErrorLevel};`,
+    'global error_log',
+  )
+  const patched = replaceSingleNginxDirective(
+    withErrorLevel,
+    /^[ \t]*access_log[ \t]+(?:\/var\/log\/nginx\/access\.log[ \t]+main|off);[ \t]*$/gm,
+    accessLogEnabled
+      ? 'access_log  /var/log/nginx/access.log  main;'
+      : 'access_log  off;',
+    'global access_log',
+  )
+
+  await writeFile(nginxConfigPath, patched)
+}
+
 const patchProxyExplorerLinks = async (rootfs: string): Promise<void> => {
   await copyFile(
     `${rootfs}/startos-assets/${proxyPatchAsset}`,
@@ -134,6 +178,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
     'main',
   )
   await patchProxyExplorerLinks(mainSubcontainer.rootfs)
+  await patchNginxLogging(mainSubcontainer.rootfs, logLevel)
 
   const torSocks = await sdk.host
     .getBridgeAddress(effects, {
@@ -214,7 +259,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
     .addDaemon('primary', {
       subcontainer: mainSubcontainer,
       exec: {
-        command: sdk.useEntrypoint(),
+        command:
+          logLevel === 'debug' || logLevel === 'trace'
+            ? sdk.useEntrypoint(['nginx-debug', '-g', 'daemon off;'])
+            : sdk.useEntrypoint(),
         env: {
           APP_MEMPOOL_IP: '127.0.0.1',
           APP_MEMPOOL_PORT: String(proxyPort),
@@ -222,6 +270,8 @@ export const main = sdk.setupMain(async ({ effects }) => {
           APP_TOR_PROXY_PORT: String(torProxyPort),
           APP_MEMPOOL_HIDDEN_SERVICE: '',
           APP_MEMPOOL_EXTERNAL_URL: '',
+          NGINX_ENTRYPOINT_QUIET_LOGS:
+            logLevel === 'error' || logLevel === 'warn' ? '1' : '',
         },
       },
       ready: {
