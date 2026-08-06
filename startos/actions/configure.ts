@@ -1,42 +1,40 @@
-import { storeJson, defaultMempoolProvider } from '../fileModels/store.json'
+import { storeJson } from '../fileModels/store.json'
 import { i18n } from '../i18n'
 import { sdk } from '../sdk'
 
 const { InputSpec, Value } = sdk
 
 const inputSpec = InputSpec.of({
-  mempoolProvider: Value.select({
-    name: i18n('Blockchain Data Provider'),
+  network: Value.select({
+    name: i18n('Network'),
     description: i18n(
-      'Choose which local service supplies Bitcoin blockchain data.',
+      'Select the Bitcoin network and matching Bitcoin and Fulcrum services.',
     ),
     values: {
-      mempool: 'mempool.space',
-      'mempool-api-proxy': 'mempool.space (proxy)',
+      mainnet: i18n('Mainnet'),
+      testnet4: i18n('Testnet4'),
     },
-    default: defaultMempoolProvider,
+    default: 'testnet4',
   }),
 })
 
 export const configure = sdk.Action.withInput(
   'configure',
-  async () => ({
+  {
     name: i18n('Configure'),
-    description: i18n('Select the local blockchain data provider.'),
-    warning: null,
-    allowedStatuses: 'only-stopped',
+    description: i18n('Choose which Bitcoin network this service uses.'),
+    warning: i18n(
+      'Changing the network switches both Bitcoin and Fulcrum dependencies and restarts the service.',
+    ),
+    allowedStatuses: 'any',
     group: null,
     visibility: 'enabled',
-  }),
-  inputSpec,
-  async ({ effects }) => ({
-    mempoolProvider:
-      (await storeJson.read((store) => store.mempoolProvider).once()) ??
-      defaultMempoolProvider,
-  }),
-  async ({ effects, input }) => {
-    await storeJson.merge(effects, {
-      mempoolProvider: input.mempoolProvider,
-    })
   },
+  inputSpec,
+  async () => ({ network: await selectedNetworkForAction() }),
+  async ({ effects, input }) =>
+    storeJson.merge(effects, { network: input.network }),
 )
+
+const selectedNetworkForAction = async () =>
+  (await storeJson.read((store) => store.network).once()) ?? 'testnet4'

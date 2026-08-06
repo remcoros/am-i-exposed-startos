@@ -1,5 +1,5 @@
 {
-  "name": "am-i-exposed-startos",
+  "name": "am-i-exposed-modded-startos",
   "scripts": {
     "build": "rm -rf ./javascript && ncc build startos/index.ts -o ./javascript",
     "prettier": "prettier --write startos",
@@ -7,8 +7,10 @@
   },
   "dependencies": {
     "@start9labs/start-sdk": "2.0.9",
-    "mempool-api-proxy-startos": "file:../../mempool-api-proxy-startos",
-    "mempool-startos": "github:Start9Labs/mempool-startos#next",
+    "bitcoin-core-startos": "github:Start9Labs/bitcoin-core-startos#31.x",
+    "bitcoin-core-testnet-startos": "github:remcoros/bitcoind-testnet4-startos#31.x-testnet4",
+    "fulcrum-startos": "github:Start9Labs/fulcrum-startos#next",
+    "fulcrum-testnet-startos": "github:remcoros/fulcrum-startos#testnet4",
     "tor-startos": "github:Start9Labs/tor-startos#next"
   },
   "devDependencies": {

@@ -16,9 +16,19 @@ const dict = {
 
   // actions/configure.ts
   Configure: 8,
-  'Select the local blockchain data provider.': 9,
-  'Blockchain Data Provider': 10,
-  'Choose which local service supplies Bitcoin blockchain data.': 11,
+  Network: 9,
+  'Select the Bitcoin network and matching Bitcoin and Fulcrum services.': 10,
+  Mainnet: 11,
+  Testnet4: 12,
+  'Choose which Bitcoin network this service uses.': 13,
+  'Changing the network switches both Bitcoin and Fulcrum dependencies and restarts the service.': 14,
+
+  // dependencies.ts
+  'Bitcoin must be unpruned with transaction indexing enabled.': 15,
+
+  // embedded API proxy
+  'The API is ready': 16,
+  'The API is not ready': 17,
 } as const
 
 /**

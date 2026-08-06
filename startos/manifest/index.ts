@@ -1,17 +1,19 @@
 import { setupManifest } from '@start9labs/start-sdk'
 import {
+  bitcoinMainnetDescription,
+  bitcoinTestnetDescription,
+  fulcrumMainnetDescription,
+  fulcrumTestnetDescription,
   long,
-  mempoolDescription,
-  mempoolProxyDescription,
   short,
   torDescription,
 } from './i18n'
 
 export const manifest = setupManifest({
-  id: 'am-i-exposed',
+  id: 'am-i-exposed-modded',
   title: 'Am I Exposed?',
   license: 'MIT',
-  packageRepo: 'https://github.com/Start9Labs/am-i-exposed-startos',
+  packageRepo: 'https://github.com/REPLACE_ME/am-i-exposed-modded-startos',
   upstreamRepo: 'https://github.com/Copexit/am-i-exposed',
   marketingUrl: 'https://am-i.exposed',
   donationUrl: null,
@@ -22,7 +24,13 @@ export const manifest = setupManifest({
       source: {
         dockerTag: 'ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8',
       },
-      arch: ['x86_64', 'aarch64'],
+      arch: ['x86_64'],
+    },
+    proxy: {
+      source: {
+        dockerTag: 'mempool-api-proxy:poc',
+      },
+      arch: ['x86_64'],
     },
     'tor-proxy': {
       source: {
@@ -30,24 +38,41 @@ export const manifest = setupManifest({
           workdir: './tor-proxy',
         },
       },
-      arch: ['x86_64', 'aarch64'],
+      arch: ['x86_64'],
     },
   },
   dependencies: {
-    mempool: {
-      description: mempoolDescription,
+    bitcoind: {
+      description: bitcoinMainnetDescription,
       optional: true,
       metadata: {
-        title: 'Mempool',
-        icon: 'https://raw.githubusercontent.com/Start9Labs/mempool-startos/58ef0d5b4f29577baa65da7a4a4987621d88c0e7/icon.svg',
+        title: 'Bitcoin',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/bitcoin-core-startos/89394ab82fcf004c905cf65ce9c6bbd0e9dc28f0/dep-icon.svg',
       },
     },
-    'mempool-api-proxy': {
-      description: mempoolProxyDescription,
+    fulcrum: {
+      description: fulcrumMainnetDescription,
       optional: true,
-      // Publication blocker: replace this with the package's release s9pk URL
-      // once mempool-api-proxy-startos has a remote and published release.
-      s9pk: null,
+      metadata: {
+        title: 'Fulcrum',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/fulcrum-startos/987f43239df8f7053a637731d67602d7f46eb35c/icon.png',
+      },
+    },
+    'bitcoind-testnet': {
+      description: bitcoinTestnetDescription,
+      optional: true,
+      metadata: {
+        title: 'Bitcoin',
+        icon: 'https://raw.githubusercontent.com/remcoros/bitcoind-testnet4-startos/fea66004a383b1584ed18c59befe024bd5867fa8/dep-icon.svg',
+      },
+    },
+    'fulcrum-testnet': {
+      description: fulcrumTestnetDescription,
+      optional: true,
+      metadata: {
+        title: 'Fulcrum (testnet4)',
+        icon: 'https://raw.githubusercontent.com/remcoros/fulcrum-startos/67bd68a5e064288871ba3e6c5315d8b86e43b202/icon.png',
+      },
     },
     tor: {
       description: torDescription,

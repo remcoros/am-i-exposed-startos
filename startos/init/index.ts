@@ -9,10 +9,10 @@ import { seedStore } from './seedStore'
 export const init = sdk.setupInit(
   restoreInit,
   versionGraph,
+  seedStore,
   setInterfaces,
   setDependencies,
   actions,
-  seedStore,
 )
 
 export const uninit = sdk.setupUninit(versionGraph)

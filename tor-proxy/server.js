@@ -3,6 +3,7 @@ const https = require("https");
 const { SocksProxyAgent } = require("socks-proxy-agent");
 
 const PORT = parseInt(process.env.PORT || "3001", 10);
+const HOST = process.env.HOST || "127.0.0.1";
 // Tor's SOCKS bridge address (`<osIp>:9050`), injected by startos/main.ts.
 const TOR_SOCKS = process.env.TOR_SOCKS || "127.0.0.1:9050";
 const UPSTREAM_BASE =
@@ -98,8 +99,8 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Tor proxy sidecar listening on port ${PORT}`);
+server.listen(PORT, HOST, () => {
+  console.log(`Tor proxy sidecar listening on ${HOST}:${PORT}`);
   console.log(`Routing via socks5h://${TOR_SOCKS}`);
 });
 

@@ -1,15 +1,31 @@
 # TODO
 
-- [ ] **Publication blocker:** replace the temporary
-      `file:../../mempool-api-proxy-startos` dependency with a pinned Git remote
-      branch or commit and regenerate `package-lock.json` after the proxy package
-      repository is published. Remove the repo-local `.npmrc` `allow-git=all`
-      and `install-links=true` workarounds at the same time; they are needed only
-      while npm prepares the local package, installs its Git-based type
-      dependencies, and copies it inside this package's TypeScript build root.
-- [ ] Replace the proxy-only runtime explorer-link patch with the corresponding
-      upstream behavior when a released Am I Exposed image can explicitly hide
-      explorer links for API-only providers.
-- [ ] Recheck `npm audit` after the next Start SDK release. SDK 2.0.9 bundles
-      the currently reported `brace-expansion` and `js-yaml` build-tooling
-      advisories, and npm cannot update those bundled copies locally.
+- [ ] Replace the local x86_64-only `mempool-api-proxy:poc` tag with an
+      immutable, reproducible, published image and add aarch64 support before
+      release.
+- [ ] Choose and implement a single frontend-network integration: either extend
+      the materialized-rootfs runtime patch or publish a source-level Web UI
+      image fix. It must make the frontend URL/default, `localStorage` choice,
+      and cache namespace follow the StartOS-selected backend network.
+- [ ] Test frontend/backend network agreement on Mainnet and Testnet4 with a
+      clean browser, both network URL forms, pre-existing `localStorage`, cached
+      data from the other network, service restart, and repeated network
+      switches. Do not mark end-to-end network integration complete while a
+      mismatch remains possible.
+- [ ] Verify cookie rotation and proxy recovery after Bitcoin restarts on
+      Mainnet and Testnet4. Both read-only cookie paths, mode `0600`, and the
+      uid 0 to 1000 mapping have been exercised on a live install.
+- [ ] Verify the embedded proxy stays internal and stateless, uses plaintext
+      bridge connections only, and rejects mismatched or lagging upstreams.
+- [ ] Load-test `/api/*` through each enabled Web UI address to confirm
+      `RATE_LIMIT_MAX=0` leaves inbound requests unthrottled while concurrency,
+      history, work, response-size, and timeout limits remain enforced. Confirm
+      the proxy port has no separate StartOS interface.
+- [ ] Verify explorer links remain hidden for transaction and address results
+      on both networks through the always-applied materialized-rootfs script
+      injection, including after restart and package update.
+- [ ] Verify Tor-backed Chainalysis lookups, service restart/update, and
+      backup/restore of only intended package state.
+- [ ] Recheck `npm audit` after the next Start SDK release. SDK 2.0.9 currently
+      carries the reported `brace-expansion` and `js-yaml` build-tooling
+      advisories.

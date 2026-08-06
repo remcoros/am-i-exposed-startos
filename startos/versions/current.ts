@@ -1,18 +1,18 @@
 import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '0.35.8:4',
+  version: '0.35.8:5',
   releaseNotes: {
     en_US:
-      'Adds a Configure action for choosing either the full Mempool package or the lightweight Mempool API Proxy as the local blockchain data provider. Existing installations continue using Mempool by default.',
+      'Embeds the lightweight Mempool API Proxy and adds a network setting that connects directly to matching local Bitcoin and Fulcrum services on mainnet or testnet4.',
     es_ES:
-      'Añade una acción Configurar para elegir el paquete completo Mempool o el ligero Mempool API Proxy como proveedor local de datos de blockchain. Las instalaciones existentes continúan usando Mempool de forma predeterminada.',
+      'Integra el ligero Mempool API Proxy y añade una configuración de red que conecta directamente con los servicios locales correspondientes de Bitcoin y Fulcrum en mainnet o testnet4.',
     de_DE:
-      'Fügt eine Konfigurationsaktion hinzu, mit der entweder das vollständige Mempool-Paket oder der schlanke Mempool API Proxy als lokaler Blockchain-Datenanbieter ausgewählt werden kann. Bestehende Installationen verwenden standardmäßig weiterhin Mempool.',
+      'Bettet den schlanken Mempool API Proxy ein und fügt eine Netzwerkeinstellung hinzu, die sich im Mainnet oder Testnet4 direkt mit den passenden lokalen Bitcoin- und Fulcrum-Diensten verbindet.',
     pl_PL:
-      'Dodaje akcję konfiguracji umożliwiającą wybór pełnego pakietu Mempool albo lekkiego Mempool API Proxy jako lokalnego dostawcy danych blockchain. Istniejące instalacje nadal domyślnie używają Mempool.',
+      'Osadza lekki Mempool API Proxy i dodaje ustawienie sieci, które łączy się bezpośrednio z odpowiednimi lokalnymi usługami Bitcoin i Fulcrum w mainnet lub testnet4.',
     fr_FR:
-      'Ajoute une action de configuration permettant de choisir le paquet Mempool complet ou le léger Mempool API Proxy comme fournisseur local de données blockchain. Les installations existantes continuent d’utiliser Mempool par défaut.',
+      'Intègre le léger Mempool API Proxy et ajoute un réglage réseau qui se connecte directement aux services Bitcoin et Fulcrum locaux correspondants sur mainnet ou testnet4.',
   },
   migrations: {
     up: async ({ effects }) => {},

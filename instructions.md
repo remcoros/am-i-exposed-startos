@@ -2,32 +2,71 @@
 
 ## Documentation
 
-- [Am I Exposed? docs](https://github.com/Copexit/am-i-exposed/tree/main/docs) — upstream documentation for the privacy and exposure analysis tool.
+- [Am I Exposed? docs](https://github.com/Copexit/am-i-exposed/tree/main/docs)
+  explain the privacy scores, heuristics, and supported analysis workflows.
 
 ## What you get on StartOS
 
-- A **Web UI** that analyzes how exposed your on-chain Bitcoin activity is — address clustering, transaction graph hints, and the heuristics chain analysis companies use.
-- A bundled Tor proxy that lets the analyzer reach external services over Tor.
+- A **Web UI** for analyzing the privacy exposure of Bitcoin addresses,
+  transactions, and wallets.
+- A built-in, stateless blockchain API that always uses your selected local
+  Bitcoin and Fulcrum services.
+- Private Chainalysis lookups through your Tor service.
+
+You do not need the Mempool package or a separate Mempool API Proxy package.
+
+This package installs under the new id `am-i-exposed-modded`. It is separate
+from the older `am-i-exposed` package: both may be installed at once, and data,
+settings, and backups from the old package are not migrated automatically.
 
 ## Getting set up
 
-Am I Exposed? requires Tor and one blockchain data provider. The existing Mempool package remains the default:
+1. Open **Actions → Configure** and select **Mainnet** or **Testnet4**. Testnet4
+   is the default.
+2. Install and start the Bitcoin and Fulcrum dependencies shown by StartOS for
+   that network.
+3. Complete the Bitcoin configuration task if it appears. Bitcoin must be
+   unpruned and have transaction indexing enabled.
+4. Install and start **Tor**.
+5. Wait for Bitcoin and Fulcrum to sync and for Am I Exposed? to become ready.
+6. Open the **Web UI** and enter an address, xpub, or transaction id.
 
-1. Install and start the **Mempool** package. The analyzer talks to it for on-chain data.
-2. Install and start the **Tor** package, used by the bundled proxy to fetch external lookups privately.
-3. Start Am I Exposed? and open the **Web UI** to start analyzing.
+Changing the network switches the backend Bitcoin and Fulcrum services together
+and restarts Am I Exposed?. It does not migrate or share chain data between
+networks.
 
-To use the lightweight API-only alternative:
+> **Known network-selection limitation:** the pinned Web UI independently
+> chooses a network from its URL/default behavior, saves that choice in browser
+> `localStorage`, and uses it to namespace cached data. **Configure** does not
+> currently update or clear that browser state, so the Web UI network can
+> disagree with the StartOS backend. Mainnet/Testnet4 switching is not yet
+> end-to-end complete. Until the frontend integration is fixed and tested,
+> verify that the network shown by the UI matches the backend before relying on
+> a result.
 
-1. Install and configure **Mempool API Proxy** for the same Bitcoin network you intend to analyze.
-2. Stop Am I Exposed?.
-3. Open **Actions → Configure** and select **mempool.space (proxy)**.
-4. Start Am I Exposed? again. The full Mempool package is no longer required while the proxy is selected.
+Bitcoin RPC authentication is automatic. The embedded API reads the selected
+Bitcoin service's cookie from a read-only mount and follows cookie replacement
+across restarts. There is no RPC username, password, or credential task to copy.
 
 ## Using Am I Exposed?
 
-### Web UI
+The analyzer obtains blockchain information only from its built-in proxy and
+your selected local dependencies. It does not maintain another blockchain
+database.
 
-Paste an address, xpub, or transaction id and the tool walks you through what an outside observer could infer about it.
+Links such as **View on local mempool** are always hidden because the embedded
+API does not provide explorer pages. The package implements this by injecting a
+small script into the materialized Web UI rootfs; it does not build a custom Web
+UI image or Dockerfile. Analysis results and graph tools remain available.
 
-When Mempool is selected, results that link to **View on local mempool** open your own Mempool service — using its public address if you have one set up, otherwise its `.local` address (reachable from your home network). Mempool API Proxy has no explorer pages, so these links are hidden while the proxy is selected.
+The embedded proxy has no separate StartOS interface, but nginx exposes it as
+`/api/*` through every enabled Web UI address. The package disables that API's
+per-client HTTP request limit. Keep the Web UI on trusted StartOS addresses, or
+add external traffic controls if you make it broadly reachable.
+
+## Data and backups
+
+Backups retain the Web UI data and selected network. The stateless proxy has no
+database or cache to back up, and Bitcoin's RPC cookie is neither copied nor
+stored in this package's backup. Backups created for the older `am-i-exposed`
+package are not backups of `am-i-exposed-modded` and are not migrated into it.

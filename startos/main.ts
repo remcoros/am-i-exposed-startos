@@ -1,17 +1,35 @@
 import { copyFile, readFile, writeFile } from 'node:fs/promises'
+import { manifest as mainnetBitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
 import {
-  apiHostId as mempoolProxyHostId,
-  apiPort as mempoolProxyPort,
-} from 'mempool-api-proxy-startos/startos/utils'
+  rpcHostId as mainnetRpcHostId,
+  rpcPort as mainnetRpcPort,
+  rpccookiefile as mainnetCookiePath,
+} from 'bitcoin-core-startos/startos/utils'
+import { manifest as testnetBitcoinManifest } from 'bitcoin-core-testnet-startos/startos/manifest'
 import {
-  mainHostId as mempoolHostId,
-  uiPort as mempoolUiPort,
-} from 'mempool-startos/startos/utils'
+  rpcHostId as testnetRpcHostId,
+  rpcPort as testnetRpcPort,
+  rpccookiefile as testnetCookiePath,
+} from 'bitcoin-core-testnet-startos/startos/utils'
+import {
+  electrumPort as mainnetElectrumPort,
+  mainHostId as mainnetFulcrumHostId,
+} from 'fulcrum-startos/startos/utils'
+import {
+  electrumPort as testnetElectrumPort,
+  mainHostId as testnetFulcrumHostId,
+} from 'fulcrum-testnet-startos/startos/utils'
 import { socksHostId, socksPort } from 'tor-startos/startos/utils'
-import { defaultMempoolProvider, storeJson } from './fileModels/store.json'
+import { storeJson } from './fileModels/store.json'
 import { i18n } from './i18n'
 import { sdk } from './sdk'
-import { torProxyPort, uiPort } from './utils'
+import {
+  bitcoinMountpoint,
+  proxyPort,
+  splitBridgeAddress,
+  torProxyPort,
+  uiPort,
+} from './utils'
 
 const proxyPatchAsset = 'hide-proxy-explorer-links.js'
 const proxyPatchPublicPath = '/startos-proxy-ui.js'
@@ -43,91 +61,78 @@ const patchProxyExplorerLinks = async (rootfs: string): Promise<void> => {
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info(i18n('Starting Am I Exposed?'))
 
-  const mempoolProvider =
-    (await storeJson.read((store) => store.mempoolProvider).const(effects)) ??
-    defaultMempoolProvider
-  const selectedProvider =
-    mempoolProvider === 'mempool'
-      ? {
-          packageId: 'mempool' as const,
-          hostId: mempoolHostId,
-          internalPort: mempoolUiPort,
-          healthId: 'webui',
-          displayName: 'Mempool',
-        }
-      : {
-          packageId: 'mempool-api-proxy' as const,
-          hostId: mempoolProxyHostId,
-          internalPort: mempoolProxyPort,
-          healthId: 'api',
-          displayName: 'Mempool API Proxy',
-        }
+  const network = await storeJson.read((store) => store.network).const(effects)
+  if (!network) throw new Error('StartOS configuration store is missing')
 
-  // The browser-facing nginx process does not reconnect its upstream on its
-  // own. Watch the selected provider's actual ready health so this main context
-  // is rebuilt when that provider becomes reachable again after a restart.
-  const providerStatus = await sdk
-    .getStatus(effects, { packageId: selectedProvider.packageId })
-    .const()
-  if (providerStatus?.health[selectedProvider.healthId]?.result !== 'success') {
-    throw new Error(
-      `Waiting for ${selectedProvider.displayName} to be reachable`,
-    )
-  }
-
-  // Both providers implement the same plaintext HTTP /api contract consumed
-  // by the pinned upstream image. Resolve the selected package's declared
-  // host/port contract rather than assuming its assigned external port.
-  const providerBridge = await sdk.host
+  const isMainnet = network === 'mainnet'
+  const bitcoinAddress = await sdk.host
     .getBridgeAddress(effects, {
-      packageId: selectedProvider.packageId,
-      hostId: selectedProvider.hostId,
-      internalPort: selectedProvider.internalPort,
+      packageId: isMainnet ? 'bitcoind' : 'bitcoind-testnet',
+      hostId: isMainnet ? mainnetRpcHostId : testnetRpcHostId,
+      internalPort: isMainnet ? mainnetRpcPort : testnetRpcPort,
       ssl: false,
     })
     .const()
-  if (!providerBridge) {
-    throw new Error(
-      `Waiting for ${selectedProvider.displayName} to be reachable`,
-    )
-  }
-  const [mempoolIp, mempoolPort] = providerBridge.split(':')
+  const fulcrumAddress = await sdk.host
+    .getBridgeAddress(effects, {
+      packageId: isMainnet ? 'fulcrum' : 'fulcrum-testnet',
+      hostId: isMainnet ? mainnetFulcrumHostId : testnetFulcrumHostId,
+      internalPort: isMainnet ? mainnetElectrumPort : testnetElectrumPort,
+      ssl: false,
+    })
+    .const()
 
-  // Only the full Mempool package has a browser-facing explorer. The proxy is
-  // API-only, so it deliberately supplies no external URL; a proxy-only asset
-  // patch below hides the pinned UI's otherwise-broken fallback link.
-  const mempoolExternalUrl =
-    mempoolProvider === 'mempool'
-      ? await sdk.host
-          .get(
-            effects,
-            { hostId: mempoolHostId, packageId: 'mempool' },
-            (host) => {
-              const addr =
-                host &&
-                Object.values(host.bindings)
-                  .flatMap((binding) => Object.values(binding.interfaces))
-                  .find((serviceInterface) => serviceInterface.id === 'webui')
-                  ?.addressInfo
-              if (!addr) return ''
-              return (
-                addr
-                  .filter({ visibility: 'public', kind: 'domain' })
-                  .format()[0] ??
-                addr.filter({ visibility: 'public', kind: 'ip' }).format()[0] ??
-                addr.filter({ kind: 'mdns' }).format()[0] ??
-                ''
-              )
-            },
-          )
-          .const()
-      : ''
+  const fulcrum = fulcrumAddress ? splitBridgeAddress(fulcrumAddress) : null
+  const bitcoinCookiePath = `${bitcoinMountpoint}/${
+    isMainnet ? mainnetCookiePath : testnetCookiePath
+  }`
+  const bitcoinMounts = isMainnet
+    ? sdk.Mounts.of().mountDependency<typeof mainnetBitcoinManifest>({
+        dependencyId: 'bitcoind',
+        volumeId: 'main',
+        subpath: null,
+        mountpoint: bitcoinMountpoint,
+        readonly: true,
+        type: 'directory',
+        idmap: [{ fromId: 0, toId: 1000 }],
+      })
+    : sdk.Mounts.of().mountDependency<typeof testnetBitcoinManifest>({
+        dependencyId: 'bitcoind-testnet',
+        volumeId: 'main',
+        subpath: null,
+        mountpoint: bitcoinMountpoint,
+        readonly: true,
+        type: 'directory',
+        idmap: [{ fromId: 0, toId: 1000 }],
+      })
 
-  // Tor's SOCKS proxy over the bridge, handed to the tor-proxy sidecar as
-  // TOR_SOCKS. With the 9050 fallback the resolved address stays constant across
-  // tor install/update/uninstall, so this `.const()` never restarts on tor
-  // churn; a dead bridge address is just connection-refused, so routing
-  // Chainalysis lookups through it is always safe.
+  const proxySubcontainer = sdk.SubContainer.of(
+    effects,
+    { imageId: 'proxy' },
+    bitcoinMounts,
+    'proxy',
+  )
+
+  const mainMounts = sdk.Mounts.of()
+    .mountVolume({
+      volumeId: 'main',
+      subpath: null,
+      mountpoint: '/data',
+      readonly: false,
+    })
+    .mountAssets({
+      subpath: proxyPatchAsset,
+      mountpoint: `/startos-assets/${proxyPatchAsset}`,
+      type: 'file',
+    })
+  const mainSubcontainer = await sdk.SubContainer.eager(
+    effects,
+    { imageId: 'main' },
+    mainMounts,
+    'main',
+  )
+  await patchProxyExplorerLinks(mainSubcontainer.rootfs)
+
   const torSocks = await sdk.host
     .getBridgeAddress(effects, {
       packageId: 'tor',
@@ -137,38 +142,45 @@ export const main = sdk.setupMain(async ({ effects }) => {
     })
     .const()
 
-  let mainMounts = sdk.Mounts.of().mountVolume({
-    volumeId: 'main',
-    subpath: null,
-    mountpoint: '/data',
-    readonly: false,
-  })
-
-  let mainSubcontainer
-  if (mempoolProvider === 'mempool-api-proxy') {
-    mainMounts = mainMounts.mountAssets({
-      subpath: proxyPatchAsset,
-      mountpoint: `/startos-assets/${proxyPatchAsset}`,
-      type: 'file',
-    })
-    const eagerMain = await sdk.SubContainer.eager(
-      effects,
-      { imageId: 'main' },
-      mainMounts,
-      'main',
-    )
-    await patchProxyExplorerLinks(eagerMain.rootfs)
-    mainSubcontainer = eagerMain
-  } else {
-    mainSubcontainer = sdk.SubContainer.of(
-      effects,
-      { imageId: 'main' },
-      mainMounts,
-      'main',
-    )
-  }
-
   return sdk.Daemons.of(effects)
+    .addDaemon('proxy', {
+      subcontainer: proxySubcontainer,
+      exec: {
+        command: ['node', '--use-system-ca', 'dist/server.js'],
+        env: {
+          BITCOIN_NETWORK: network,
+          SERVER_HOST: '127.0.0.1',
+          SERVER_PORT: String(proxyPort),
+          RATE_LIMIT_MAX: '0',
+          FULCRUM_TLS: 'false',
+          ...(bitcoinAddress
+            ? {
+                BITCOIN_RPC_URL: `http://${bitcoinAddress}`,
+                BITCOIN_RPC_COOKIE_FILE: bitcoinCookiePath,
+              }
+            : {}),
+          ...(fulcrum
+            ? {
+                FULCRUM_HOST: fulcrum.host,
+                FULCRUM_PORT: String(fulcrum.port),
+              }
+            : {}),
+        },
+      },
+      ready: {
+        display: null,
+        fn: () =>
+          sdk.healthCheck.checkWebUrl(
+            effects,
+            `http://127.0.0.1:${String(proxyPort)}/ready`,
+            {
+              successMessage: i18n('The API is ready'),
+              errorMessage: i18n('The API is not ready'),
+            },
+          ),
+      },
+      requires: [],
+    })
     .addDaemon('tor-proxy', {
       subcontainer: sdk.SubContainer.of(
         effects,
@@ -179,6 +191,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
       exec: {
         command: sdk.useEntrypoint(),
         env: {
+          HOST: '127.0.0.1',
           PORT: String(torProxyPort),
           TOR_SOCKS: torSocks,
         },
@@ -198,12 +211,12 @@ export const main = sdk.setupMain(async ({ effects }) => {
       exec: {
         command: sdk.useEntrypoint(),
         env: {
-          APP_MEMPOOL_IP: mempoolIp,
-          APP_MEMPOOL_PORT: mempoolPort,
+          APP_MEMPOOL_IP: '127.0.0.1',
+          APP_MEMPOOL_PORT: String(proxyPort),
           APP_TOR_PROXY_IP: '127.0.0.1',
           APP_TOR_PROXY_PORT: String(torProxyPort),
           APP_MEMPOOL_HIDDEN_SERVICE: '',
-          APP_MEMPOOL_EXTERNAL_URL: mempoolExternalUrl,
+          APP_MEMPOOL_EXTERNAL_URL: '',
         },
       },
       ready: {
@@ -214,6 +227,6 @@ export const main = sdk.setupMain(async ({ effects }) => {
             errorMessage: i18n('The web interface is not ready'),
           }),
       },
-      requires: ['tor-proxy'],
+      requires: ['proxy', 'tor-proxy'],
     })
 })
