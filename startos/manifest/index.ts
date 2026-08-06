@@ -11,7 +11,7 @@ import {
 
 export const manifest = setupManifest({
   id: 'am-i-exposed-modded',
-  title: 'Am I Exposed?',
+  title: 'Am I Exposed? (modded)',
   license: 'MIT',
   packageRepo: 'https://github.com/remcoros/am-i-exposed-startos',
   upstreamRepo: 'https://github.com/Copexit/am-i-exposed',
