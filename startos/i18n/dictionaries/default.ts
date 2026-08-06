@@ -20,8 +20,8 @@ const dict = {
   'Select the Bitcoin network and matching Bitcoin and Fulcrum services.': 10,
   Mainnet: 11,
   Testnet4: 12,
-  'Choose which Bitcoin network this service uses.': 13,
-  'Changing the network switches both Bitcoin and Fulcrum dependencies and restarts the service.': 14,
+  'Choose the Bitcoin network and proxy log level.': 13,
+  'Changing either setting restarts the service. Changing the network also switches both Bitcoin and Fulcrum dependencies.': 14,
 
   // dependencies.ts
   'Bitcoin must be unpruned with transaction indexing enabled.': 15,
@@ -29,6 +29,13 @@ const dict = {
   // embedded API proxy
   'The API is ready': 16,
   'The API is not ready': 17,
+  'Proxy log level': 18,
+  'Control proxy log verbosity. Informational and more verbose levels include HTTP request logs.': 19,
+  'Errors only': 20,
+  'Warnings and errors': 21,
+  Informational: 22,
+  Debug: 23,
+  Trace: 24,
 } as const
 
 /**

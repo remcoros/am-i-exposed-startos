@@ -1,18 +1,18 @@
 import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '0.35.8:7',
+  version: '0.35.8:8',
   releaseNotes: {
     en_US:
-      'Tunes the embedded Mempool API Proxy for large personal wallets with 16 concurrent Bitcoin RPC requests and 8 concurrent Fulcrum requests.',
+      'Adds configurable embedded-proxy logging and defaults to warnings and errors, suppressing routine HTTP request logs.',
     es_ES:
-      'Ajusta el Mempool API Proxy integrado para grandes carteras personales con 16 solicitudes RPC de Bitcoin y 8 solicitudes de Fulcrum simultáneas.',
+      'Añade un registro configurable para el proxy integrado y utiliza de forma predeterminada advertencias y errores, suprimiendo los registros rutinarios de solicitudes HTTP.',
     de_DE:
-      'Optimiert den eingebetteten Mempool API Proxy für große persönliche Wallets mit 16 gleichzeitigen Bitcoin-RPC- und 8 gleichzeitigen Fulcrum-Anfragen.',
+      'Fügt eine konfigurierbare Protokollierung für den eingebetteten Proxy hinzu und verwendet standardmäßig Warnungen und Fehler, wodurch routinemäßige HTTP-Anfrageprotokolle unterdrückt werden.',
     pl_PL:
-      'Dostosowuje wbudowany Mempool API Proxy do dużych portfeli osobistych, używając 16 równoczesnych żądań Bitcoin RPC i 8 równoczesnych żądań Fulcrum.',
+      'Dodaje konfigurowalne rejestrowanie wbudowanego proxy i domyślnie zapisuje ostrzeżenia oraz błędy, wyłączając rutynowe dzienniki żądań HTTP.',
     fr_FR:
-      'Optimise le Mempool API Proxy intégré pour les grands portefeuilles personnels avec 16 requêtes RPC Bitcoin et 8 requêtes Fulcrum simultanées.',
+      'Ajoute une journalisation configurable pour le proxy intégré et utilise par défaut les avertissements et les erreurs, supprimant les journaux courants des requêtes HTTP.',
   },
   migrations: {
     up: async ({ effects }) => {},

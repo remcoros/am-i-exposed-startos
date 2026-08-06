@@ -3,6 +3,7 @@ import { sdk } from '../sdk'
 
 const shape = z.object({
   network: z.enum(['mainnet', 'testnet4']).catch('testnet4'),
+  logLevel: z.enum(['error', 'warn', 'info', 'debug', 'trace']).catch('warn'),
 })
 
 export const storeJson = FileHelper.json(

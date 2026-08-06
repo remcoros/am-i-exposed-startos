@@ -31,14 +31,14 @@ bundle, or package checks; state which behavior was exercised on StartOS.
   patch without a custom Web UI image or Dockerfile.
 - The embedded proxy is always used. Do not add a Mempool/provider switch or a
   dependency on `mempool` or the separately packaged `mempool-api-proxy`.
-- The Configure action selects only `mainnet` or `testnet4`, with `testnet4` as
-  the default. It conditionally declares the matching direct Bitcoin and
-  Fulcrum dependencies; Tor is always required. Do not claim end-to-end network
-  integration is complete: the pinned frontend independently derives and
-  persists its network through URL/default behavior and browser `localStorage`,
-  and uses that selection as its cache namespace. It can mismatch the StartOS
-  backend until a runtime patch or source-level image fix is implemented and
-  tested.
+- The Configure action selects `mainnet` or `testnet4`, with `testnet4` as the
+  default, and the embedded proxy log level, with `warn` as the default. It
+  conditionally declares the matching direct Bitcoin and Fulcrum dependencies;
+  Tor is always required. Do not claim end-to-end network integration is
+  complete: the pinned frontend independently derives and persists its network
+  through URL/default behavior and browser `localStorage`, and uses that
+  selection as its cache namespace. It can mismatch the StartOS backend until
+  a runtime patch or source-level image fix is implemented and tested.
 - Resolve dependency addresses with `sdk.host.getBridgeAddress(...).const()`
   and dependency-exported host/port constants. Never use `.startos` DNS names,
   dependency container IPs, or assumed external ports.
@@ -57,6 +57,8 @@ bundle, or package checks; state which behavior was exercised on StartOS.
 - Keep `CORE_RPC_MAX_CONCURRENCY=16` and `FULCRUM_MAX_CONCURRENCY=8` in the
   embedded proxy environment. This is the benchmark-supported personal-use
   profile; do not raise Fulcrum concurrency merely to match Bitcoin.
+- Pass the configured proxy log level as `LOG_LEVEL`, defaulting to `warn` so
+  warnings and errors remain visible without routine HTTP request logs.
 - Explorer links are always hidden because the internal API has no explorer UI.
   Preserve the always-applied materialized-rootfs script injection. Do not
   restore Mempool URL discovery or make the injection provider-conditional.

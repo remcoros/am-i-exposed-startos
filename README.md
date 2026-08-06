@@ -46,14 +46,16 @@ HTTP request limiter, including for requests arriving through those UI
 addresses; upstream concurrency, history, work, response-size, and timeout
 limits remain active. The package explicitly gives Bitcoin RPC up to 16 active
 requests and Fulcrum up to 8, the tested personal-use profile for large-wallet
-analysis. The proxy has no persistent data volume.
+analysis. Its configurable log level defaults to `warn`, which retains warnings
+and errors while suppressing routine HTTP request logs. The proxy has no
+persistent data volume.
 
 ## Volumes
 
-| Volume    | Mount                      | Purpose                   |
-| --------- | -------------------------- | ------------------------- |
-| `main`    | `/data` in the Web UI      | Upstream application data |
-| `startos` | StartOS package state only | Selected Bitcoin network  |
+| Volume    | Mount                      | Purpose                     |
+| --------- | -------------------------- | --------------------------- |
+| `main`    | `/data` in the Web UI      | Upstream application data   |
+| `startos` | StartOS package state only | Network and proxy log level |
 
 The embedded proxy is stateless. It has no database, cache volume, or data
 directory. The selected Bitcoin package's `main` volume is mounted read-only
@@ -69,9 +71,11 @@ during a Bitcoin restart does not require stored credentials.
 
 ## Installation and Configuration
 
-The **Configure** action selects only the Bitcoin network. `testnet4` is the
-default for current validation. The choice switches the complete direct
-dependency pair:
+The **Configure** action selects the Bitcoin network and embedded proxy log
+level. `testnet4` is the default network for current validation. The log level
+defaults to **Warnings and errors**, which hides routine HTTP request logs;
+select **Informational**, **Debug**, or **Trace** when more detail is needed.
+The network choice switches the complete direct dependency pair:
 
 | Selection | Bitcoin dependency | Fulcrum dependency |
 | --------- | ------------------ | ------------------ |
@@ -122,9 +126,9 @@ or unsynced upstreams.
 
 ## Actions
 
-| Action      | Purpose                                             |
-| ----------- | --------------------------------------------------- |
-| `Configure` | Select Mainnet or Testnet4; Testnet4 is the default |
+| Action      | Purpose                                                       |
+| ----------- | ------------------------------------------------------------- |
+| `Configure` | Select network and proxy logging; defaults to warnings/errors |
 
 There is no provider switch. Changing networks changes both backend Bitcoin and
 Fulcrum dependencies and restarts the affected runtime context. It does not yet
@@ -134,9 +138,9 @@ cache namespace.
 ## Backups
 
 Backups include the Web UI's `main` volume and the `startos` volume containing
-the selected network. They contain no proxy index, cache, RPC password, or
-copied Bitcoin cookie. Bitcoin and Fulcrum own and back up their chain/index
-state independently.
+the selected network and proxy log level. They contain no proxy index, cache,
+RPC password, or copied Bitcoin cookie. Bitcoin and Fulcrum own and back up
+their chain/index state independently.
 
 Because `am-i-exposed-modded` is a new manifest id, installing it does not
 restore or adopt volumes, settings, or backups belonging to `am-i-exposed`.

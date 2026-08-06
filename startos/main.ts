@@ -61,8 +61,10 @@ const patchProxyExplorerLinks = async (rootfs: string): Promise<void> => {
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info(i18n('Starting Am I Exposed?'))
 
-  const network = await storeJson.read((store) => store.network).const(effects)
-  if (!network) throw new Error('StartOS configuration store is missing')
+  const store = await storeJson.read((value) => value).const(effects)
+  if (!store) throw new Error('StartOS configuration store is missing')
+
+  const { network, logLevel } = store
 
   const isMainnet = network === 'mainnet'
   const bitcoinAddress = await sdk.host
@@ -155,6 +157,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
           CORE_RPC_MAX_CONCURRENCY: '16',
           FULCRUM_MAX_CONCURRENCY: '8',
           FULCRUM_TLS: 'false',
+          LOG_LEVEL: logLevel,
           ...(bitcoinAddress
             ? {
                 BITCOIN_RPC_URL: `http://${bitcoinAddress}`,

@@ -48,6 +48,7 @@ The embedded proxy must continue to:
 - use the selected Bitcoin RPC cookie and plaintext internal Fulcrum binding;
 - receive `RATE_LIMIT_MAX=0`; and
 - receive `CORE_RPC_MAX_CONCURRENCY=16` and `FULCRUM_MAX_CONCURRENCY=8`; and
+- receive the configured `LOG_LEVEL`, defaulting to `warn`; and
 - expose no separate StartOS interface for its port while remaining reachable
   as `/api/*` through all enabled Web UI addresses.
 
@@ -83,6 +84,7 @@ and verified explicitly rather than inferred from version metadata.
 5. Run formatting, TypeScript, bundle, and proxy application tests.
 6. Pack and install the exact artifact. Exercise both backend network
    selections, frontend URL/`localStorage`/cache agreement, cookie rotation,
-   embedded-proxy readiness, `/api/*` exposure and limits, injected hidden
-   explorer links, Tor lookups, side-by-side package identity, restart/update,
-   and backup/restore before publication.
+   embedded-proxy readiness, every proxy log-level selection and suppression of
+   routine request logs at `warn`, `/api/*` exposure and limits, injected
+   hidden explorer links, Tor lookups, side-by-side package identity,
+   restart/update, and backup/restore before publication.
