@@ -61,8 +61,10 @@ UI image or Dockerfile. Analysis results and graph tools remain available.
 
 The embedded proxy has no separate StartOS interface, but nginx exposes it as
 `/api/*` through every enabled Web UI address. The package disables that API's
-per-client HTTP request limit. Keep the Web UI on trusted StartOS addresses, or
-add external traffic controls if you make it broadly reachable.
+per-client HTTP request limit. It uses the tested personal-use concurrency
+profile of 16 active Bitcoin RPC requests and 8 active Fulcrum requests for
+large-wallet analysis. Keep the Web UI on trusted StartOS addresses, or add
+external traffic controls if you make it broadly reachable.
 
 ## Data and backups
 

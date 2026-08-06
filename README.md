@@ -44,7 +44,9 @@ StartOS interface, but the same API remains reachable through `/api/*` on every
 enabled Web UI address. `RATE_LIMIT_MAX=0` explicitly disables its per-client
 HTTP request limiter, including for requests arriving through those UI
 addresses; upstream concurrency, history, work, response-size, and timeout
-limits remain active. The proxy has no persistent data volume.
+limits remain active. The package explicitly gives Bitcoin RPC up to 16 active
+requests and Fulcrum up to 8, the tested personal-use profile for large-wallet
+analysis. The proxy has no persistent data volume.
 
 ## Volumes
 
@@ -198,6 +200,8 @@ proxy:
   reachable_via: web_ui:/api/*
   persistent_data: false
   rate_limit_max: 0
+  core_rpc_max_concurrency: 16
+  fulcrum_max_concurrency: 8
   bitcoin_auth: read-only RPC cookie
 frontend_network_integration: blocked # URL/localStorage/cache can mismatch backend
 explorer_links: hidden by always-applied materialized-rootfs script injection

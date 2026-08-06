@@ -47,6 +47,7 @@ The embedded proxy must continue to:
 - run as a non-root user without a writable data volume;
 - use the selected Bitcoin RPC cookie and plaintext internal Fulcrum binding;
 - receive `RATE_LIMIT_MAX=0`; and
+- receive `CORE_RPC_MAX_CONCURRENCY=16` and `FULCRUM_MAX_CONCURRENCY=8`; and
 - expose no separate StartOS interface for its port while remaining reachable
   as `/api/*` through all enabled Web UI addresses.
 

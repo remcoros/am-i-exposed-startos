@@ -17,6 +17,7 @@
 - [ ] Load-test `/api/*` through each enabled Web UI address to confirm
       `RATE_LIMIT_MAX=0` leaves inbound requests unthrottled while concurrency,
       history, work, response-size, and timeout limits remain enforced. Confirm
+      the configured 16-request Bitcoin and 8-request Fulcrum limits and that
       the proxy port has no separate StartOS interface.
 - [ ] Verify explorer links remain hidden for transaction and address results
       on both networks through the always-applied materialized-rootfs script

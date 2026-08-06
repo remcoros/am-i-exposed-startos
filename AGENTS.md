@@ -54,6 +54,9 @@ bundle, or package checks; state which behavior was exercised on StartOS.
 - Keep `RATE_LIMIT_MAX=0` in the embedded proxy environment. This disables only
   the inbound HTTP rate cap, including traffic through the exported Web UI;
   bounded upstream concurrency and work limits stay enabled.
+- Keep `CORE_RPC_MAX_CONCURRENCY=16` and `FULCRUM_MAX_CONCURRENCY=8` in the
+  embedded proxy environment. This is the benchmark-supported personal-use
+  profile; do not raise Fulcrum concurrency merely to match Bitcoin.
 - Explorer links are always hidden because the internal API has no explorer UI.
   Preserve the always-applied materialized-rootfs script injection. Do not
   restore Mempool URL discovery or make the injection provider-conditional.

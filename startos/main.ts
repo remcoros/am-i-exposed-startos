@@ -152,6 +152,8 @@ export const main = sdk.setupMain(async ({ effects }) => {
           SERVER_HOST: '127.0.0.1',
           SERVER_PORT: String(proxyPort),
           RATE_LIMIT_MAX: '0',
+          CORE_RPC_MAX_CONCURRENCY: '16',
+          FULCRUM_MAX_CONCURRENCY: '8',
           FULCRUM_TLS: 'false',
           ...(bitcoinAddress
             ? {
