@@ -9,6 +9,7 @@
 
 - A **Web UI** for analyzing the privacy exposure of Bitcoin addresses,
   transactions, and wallets.
+- Support for x86_64 and aarch64 StartOS systems.
 - A built-in, stateless blockchain API that always uses your selected local
   Bitcoin and Fulcrum services.
 - Private Chainalysis lookups through your Tor service.

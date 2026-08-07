@@ -1,18 +1,18 @@
 import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '0.35.8:10',
+  version: '0.35.8:11',
   releaseNotes: {
     en_US:
-      'Updates the embedded proxy to support all protocol-valid witness addresses and return mempool-compatible script assembly.',
+      'Adds support for ARM64 StartOS systems and updates the embedded proxy to the multi-architecture 0.1.0 image.',
     es_ES:
-      'Actualiza el proxy integrado para admitir todas las direcciones witness válidas según el protocolo y devolver ensamblado de script compatible con mempool.',
+      'Añade compatibilidad con sistemas StartOS ARM64 y actualiza el proxy integrado a la imagen multiarquitectura 0.1.0.',
     de_DE:
-      'Aktualisiert den eingebetteten Proxy, damit alle protokollgültigen Witness-Adressen unterstützt und mempool-kompatible Skript-Assemblierungen zurückgegeben werden.',
+      'Fügt Unterstützung für ARM64-StartOS-Systeme hinzu und aktualisiert den eingebetteten Proxy auf das Multi-Architektur-Image 0.1.0.',
     pl_PL:
-      'Aktualizuje wbudowany serwer proxy, aby obsługiwał wszystkie adresy witness zgodne z protokołem i zwracał składnię skryptów zgodną z mempool.',
+      'Dodaje obsługę systemów StartOS ARM64 i aktualizuje wbudowany serwer proxy do wieloarchitekturowego obrazu 0.1.0.',
     fr_FR:
-      'Met à jour le proxy intégré afin de prendre en charge toutes les adresses witness valides selon le protocole et de renvoyer un assemblage de script compatible avec mempool.',
+      "Ajoute la prise en charge des systèmes StartOS ARM64 et met à jour le proxy intégré vers l'image multiarchitecture 0.1.0.",
   },
   migrations: {
     up: async ({ effects }) => {},

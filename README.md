@@ -22,11 +22,11 @@ or backups.
 
 The package runs three internal daemons:
 
-| Daemon      | Image source                                                                                                 | Purpose                                                        |
-| ----------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
-| `main`      | `ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8`                                                                | Nginx and the static browser application                       |
-| `proxy`     | `ghcr.io/remcoros/mempool-api-proxy@sha256:ad72c0702468356c5978a8fe4e2983e877eb1267dd801e64bc9011a9b66526d3` | Stateless Esplora-compatible API backed by Bitcoin and Fulcrum |
-| `tor-proxy` | Package-local `tor-proxy/Dockerfile` build                                                                   | HTTP-to-SOCKS bridge for private Chainalysis lookups           |
+| Daemon      | Image source                                                                                                       | Purpose                                                        |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| `main`      | `ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8`                                                                      | Nginx and the static browser application                       |
+| `proxy`     | `ghcr.io/remcoros/mempool-api-proxy:0.1.0@sha256:e5b12b6da202e01f00c106ad9e9b91a3d92f4a4867797dce0458fd1536783823` | Stateless Esplora-compatible API backed by Bitcoin and Fulcrum |
+| `tor-proxy` | Package-local `tor-proxy/Dockerfile` build                                                                         | HTTP-to-SOCKS bridge for private Chainalysis lookups           |
 
 The Web UI and embedded proxy are referenced with `dockerTag`; neither requires
 a custom Dockerfile or replacement image. The package does, however, always
@@ -37,7 +37,9 @@ logs. The existing Tor proxy remains the package's sole custom Dockerfile build.
 proxy image is published from
 [`remcoros/mempool-api-proxy`](https://github.com/remcoros/mempool-api-proxy)
 and pinned to an immutable OCI index digest. That index currently publishes
-only a `linux/amd64` runtime manifest, so the package remains x86_64-only.
+`linux/amd64` and `linux/arm64` runtime manifests. The Web UI and Tor proxy base
+image also provide both architectures, so the package supports x86_64 and
+aarch64 StartOS systems.
 
 The Web UI's nginx sends every `/api/*` request to the embedded proxy over the
 package's private container network. The proxy port is not exported as its own
@@ -170,8 +172,7 @@ not assume an in-place package upgrade.
 - The embedded API has no HTTP request-rate cap and `/api/*` exposes it through
   every enabled Web UI address. Keep the UI on trusted StartOS addresses or
   apply traffic controls outside the service when broadly exposing it.
-- The published proxy image currently provides only a `linux/amd64` runtime
-  manifest, so this package supports x86_64 only.
+- The package supports x86_64 and aarch64. RISC-V is not currently supported.
 - Live validation and release blockers are tracked in `TODO.md`.
 
 ## What Is Unchanged from Upstream
@@ -188,7 +189,7 @@ not assume an in-place package upgrade.
 
 ```yaml
 package_id: am-i-exposed-modded
-architectures: [x86_64] # published proxy image provides linux/amd64 only
+architectures: [x86_64, aarch64]
 daemons:
   - main
   - proxy

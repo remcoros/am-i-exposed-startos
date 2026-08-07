@@ -23,7 +23,7 @@ bundle, or package checks; state which behavior was exercised on StartOS.
   API Proxy daemon, and the internal `tor-proxy` HTTP-to-SOCKS daemon. `main` uses
   `ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8`, the embedded proxy uses the
   immutable
-  `ghcr.io/remcoros/mempool-api-proxy@sha256:ad72c0702468356c5978a8fe4e2983e877eb1267dd801e64bc9011a9b66526d3`
+  `ghcr.io/remcoros/mempool-api-proxy:0.1.0@sha256:e5b12b6da202e01f00c106ad9e9b91a3d92f4a4867797dce0458fd1536783823`
   published image, and the existing Tor proxy is built from
   `tor-proxy/Dockerfile`. Do not introduce another custom image build. The Web
   UI rootfs is intentionally materialized and patched on every start to inject
@@ -65,9 +65,9 @@ bundle, or package checks; state which behavior was exercised on StartOS.
 - Explorer links are always hidden because the internal API has no explorer UI.
   Preserve the always-applied materialized-rootfs script injection. Do not
   restore Mempool URL discovery or make the injection provider-conditional.
-- The published proxy OCI index currently includes a `linux/amd64` runtime
-  manifest only, so keep the package x86_64-only until another published
-  architecture is verified.
+- The Web UI, embedded proxy OCI index, and Tor proxy base image are verified
+  for `linux/amd64` and `linux/arm64`; keep all three manifest image declarations
+  aligned with the package's x86_64 and aarch64 build targets.
 
 ## Repository boundaries
 

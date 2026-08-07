@@ -24,14 +24,14 @@ export const manifest = setupManifest({
       source: {
         dockerTag: 'ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8',
       },
-      arch: ['x86_64'],
+      arch: ['x86_64', 'aarch64'],
     },
     proxy: {
       source: {
         dockerTag:
-          'ghcr.io/remcoros/mempool-api-proxy@sha256:ad72c0702468356c5978a8fe4e2983e877eb1267dd801e64bc9011a9b66526d3',
+          'ghcr.io/remcoros/mempool-api-proxy:0.1.0@sha256:e5b12b6da202e01f00c106ad9e9b91a3d92f4a4867797dce0458fd1536783823',
       },
-      arch: ['x86_64'],
+      arch: ['x86_64', 'aarch64'],
     },
     'tor-proxy': {
       source: {
@@ -39,7 +39,7 @@ export const manifest = setupManifest({
           workdir: './tor-proxy',
         },
       },
-      arch: ['x86_64'],
+      arch: ['x86_64', 'aarch64'],
     },
   },
   dependencies: {

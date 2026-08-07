@@ -1,5 +1,8 @@
 # TODO
 
+- [ ] Install and exercise the aarch64 package on ARM StartOS hardware. Verify
+      all three daemons, both backend network selections, cookie access, Tor
+      lookups, nginx runtime patches, restart/update, and backup/restore.
 - [ ] Choose and implement a single frontend-network integration: either extend
       the materialized-rootfs runtime patch or publish a source-level Web UI
       image fix. It must make the frontend URL/default, `localStorage` choice,

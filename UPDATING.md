@@ -3,7 +3,7 @@
 This package uses two manifest `dockerTag` images and one package-local build:
 
 - `ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8` for `main`;
-- `ghcr.io/remcoros/mempool-api-proxy@sha256:ad72c0702468356c5978a8fe4e2983e877eb1267dd801e64bc9011a9b66526d3`
+- `ghcr.io/remcoros/mempool-api-proxy:0.1.0@sha256:e5b12b6da202e01f00c106ad9e9b91a3d92f4a4867797dce0458fd1536783823`
   for `proxy`; and
 - `tor-proxy/Dockerfile` for the existing internal HTTP-to-SOCKS proxy.
 
@@ -38,10 +38,10 @@ image fix, then test clean and pre-existing browser state on both networks.
 
 The proxy image is published from
 [`remcoros/mempool-api-proxy`](https://github.com/remcoros/mempool-api-proxy)
-and pinned by immutable OCI index digest. The pinned index currently contains a
-`linux/amd64` runtime manifest (plus its build attestation), so the package must
-remain x86_64-only until a published digest is verified to include another
-runtime architecture.
+and pinned by immutable OCI index digest. The pinned index contains
+`linux/amd64` and `linux/arm64` runtime manifests. The Web UI image and the
+`node:22-alpine` base used by the Tor proxy must also retain both architectures;
+keep all three manifest image declarations and `ARCHES := x86 arm` aligned.
 
 The embedded proxy must continue to:
 
