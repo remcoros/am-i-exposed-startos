@@ -25,7 +25,7 @@ The package runs three internal daemons:
 | Daemon      | Image source                                                                                                 | Purpose                                                        |
 | ----------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
 | `main`      | `ghcr.io/copexit/am-i-exposed-umbrel:v0.35.8`                                                                | Nginx and the static browser application                       |
-| `proxy`     | `ghcr.io/remcoros/mempool-api-proxy@sha256:656dd0276092629e2579c7df3c0946b1c068c35b1da400369a7a6b89fe31bb69` | Stateless Esplora-compatible API backed by Bitcoin and Fulcrum |
+| `proxy`     | `ghcr.io/remcoros/mempool-api-proxy@sha256:ad72c0702468356c5978a8fe4e2983e877eb1267dd801e64bc9011a9b66526d3` | Stateless Esplora-compatible API backed by Bitcoin and Fulcrum |
 | `tor-proxy` | Package-local `tor-proxy/Dockerfile` build                                                                   | HTTP-to-SOCKS bridge for private Chainalysis lookups           |
 
 The Web UI and embedded proxy are referenced with `dockerTag`; neither requires

@@ -29,7 +29,7 @@ export const manifest = setupManifest({
     proxy: {
       source: {
         dockerTag:
-          'ghcr.io/remcoros/mempool-api-proxy@sha256:656dd0276092629e2579c7df3c0946b1c068c35b1da400369a7a6b89fe31bb69',
+          'ghcr.io/remcoros/mempool-api-proxy@sha256:ad72c0702468356c5978a8fe4e2983e877eb1267dd801e64bc9011a9b66526d3',
       },
       arch: ['x86_64'],
     },

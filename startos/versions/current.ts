@@ -1,18 +1,18 @@
 import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '0.35.8:9',
+  version: '0.35.8:10',
   releaseNotes: {
     en_US:
-      'Applies configurable logging to both the embedded proxy and Web UI nginx, suppressing their routine request logs at the default warning level.',
+      'Updates the embedded proxy to support all protocol-valid witness addresses and return mempool-compatible script assembly.',
     es_ES:
-      'Aplica el registro configurable tanto al proxy integrado como a nginx de la interfaz web, suprimiendo sus registros rutinarios de solicitudes con el nivel de advertencia predeterminado.',
+      'Actualiza el proxy integrado para admitir todas las direcciones witness válidas según el protocolo y devolver ensamblado de script compatible con mempool.',
     de_DE:
-      'Wendet die konfigurierbare Protokollierung auf den eingebetteten Proxy und Web-UI-nginx an und unterdrückt deren routinemäßige Anfrageprotokolle bei der standardmäßigen Warnstufe.',
+      'Aktualisiert den eingebetteten Proxy, damit alle protokollgültigen Witness-Adressen unterstützt und mempool-kompatible Skript-Assemblierungen zurückgegeben werden.',
     pl_PL:
-      'Stosuje konfigurowalne rejestrowanie zarówno do wbudowanego proxy, jak i nginx interfejsu webowego, wyłączając rutynowe dzienniki żądań przy domyślnym poziomie ostrzeżeń.',
+      'Aktualizuje wbudowany serwer proxy, aby obsługiwał wszystkie adresy witness zgodne z protokołem i zwracał składnię skryptów zgodną z mempool.',
     fr_FR:
-      'Applique la journalisation configurable au proxy intégré et à nginx de l’interface web, supprimant leurs journaux courants de requêtes au niveau d’avertissement par défaut.',
+      'Met à jour le proxy intégré afin de prendre en charge toutes les adresses witness valides selon le protocole et de renvoyer un assemblage de script compatible avec mempool.',
   },
   migrations: {
     up: async ({ effects }) => {},
