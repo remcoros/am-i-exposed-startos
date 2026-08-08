@@ -1,18 +1,18 @@
 import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '0.35.8:11',
+  version: '0.35.8:12',
   releaseNotes: {
     en_US:
-      'Adds support for ARM64 StartOS systems and updates the embedded proxy to the multi-architecture 0.1.0 image.',
+      'Default to mainnet. Show the correct dependency name for Bitcoin testnet4.',
     es_ES:
-      'Añade compatibilidad con sistemas StartOS ARM64 y actualiza el proxy integrado a la imagen multiarquitectura 0.1.0.',
+      'Por defecto a mainnet. Muestra el nombre de dependencia correcto para Bitcoin testnet4.',
     de_DE:
-      'Fügt Unterstützung für ARM64-StartOS-Systeme hinzu und aktualisiert den eingebetteten Proxy auf das Multi-Architektur-Image 0.1.0.',
+      'Standardmäßig auf Mainnet. Zeigt den korrekten Abhängigkeitsnamen für Bitcoin testnet4 an.',
     pl_PL:
-      'Dodaje obsługę systemów StartOS ARM64 i aktualizuje wbudowany serwer proxy do wieloarchitekturowego obrazu 0.1.0.',
+      'Domyślnie do mainnet. Pokazuje poprawną nazwę zależności dla Bitcoin testnet4.',
     fr_FR:
-      "Ajoute la prise en charge des systèmes StartOS ARM64 et met à jour le proxy intégré vers l'image multiarchitecture 0.1.0.",
+      "Par défaut sur le mainnet. Affiche le nom de dépendance correct pour Bitcoin testnet4.",
   },
   migrations: {
     up: async ({ effects }) => {},

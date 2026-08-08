@@ -63,7 +63,7 @@ export const manifest = setupManifest({
       description: bitcoinTestnetDescription,
       optional: true,
       metadata: {
-        title: 'Bitcoin',
+        title: 'Bitcoin (testnet4)',
         icon: 'https://raw.githubusercontent.com/remcoros/bitcoind-testnet4-startos/fea66004a383b1584ed18c59befe024bd5867fa8/dep-icon.svg',
       },
     },

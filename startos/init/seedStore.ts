@@ -5,7 +5,7 @@ export const seedStore = sdk.setupOnInit(async (effects) => {
   const store = await storeJson.read((value) => value).once()
 
   await storeJson.write(effects, {
-    network: store?.network ?? 'testnet4',
+    network: store?.network ?? 'mainnet',
     logLevel: store?.logLevel ?? 'warn',
   })
 })
